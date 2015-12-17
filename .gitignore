@@ -60,7 +60,7 @@ gradle-app.setting
 *.apk
 *.ap_
 
-# Files for the Dalvik VM
+# Files for the Dalvik VM 
 *.dex
 
 # Java class files

@@ -8,6 +8,9 @@ __Kantilever__
 
 * Spring backend
 * Spring REST + Hateoas
+
+__Website__
+
 * Angular Frontend
 
 __Android__
@@ -25,10 +28,7 @@ __Project__
             
         * __PlatformServices__ 
             _Processen/utilities die in alle modules gebruikt kunnen worden, bijv. abstracte repository_
-            
-        * __FE_WebWinkel__
-            _Frontend klant bestellen, AngularJS_    
-            
+
         * __BS_Catalogus__
             _Catalogus implementatie, bijv. repository implementaties_
             
@@ -46,6 +46,11 @@ __Project__
             
         * __PCS_Bestellen__
             _Processlogica (REST) voor bestellen, alle servicemethoden die aangeroepen worden door de android frontend_
+        
+* Angular
+    * __Modules__
+         * __FE_WebWinkel__
+                _Frontend klant bestellen, AngularJS_    
             
 * Android
     * __Modules__
@@ -99,4 +104,6 @@ __Documentatie__
 * [Sonar](http://10.32.43.248:9000/sonar/)
 * [Jenkins](http://10.32.43.249/jenkins/view/Team%201/)
 * [Stash](http://10.32.43.248:7990/stash/projects)
-* [Link to android git here]
+* [Spring Backend](https://github.com/JavaMinor2015/T1-Case3)
+* [Angular Frontend](https://github.com/JavaMinor2015/T1-Case3-Angular)
+* [Android Frontend](https://github.com/JavaMinor2015/T1-Case3-Android) 

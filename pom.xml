@@ -10,6 +10,13 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>PlatformServices</module>
+        <module>PcSWinkelen</module>
+        <module>PcSBestellen</module>
+        <module>BSBestellingenbeheer</module>
+        <module>BSKlantbeheer</module>
+        <module>BSCatalogusbeheer</module>
+        <module>BSVoorraadbeheer</module>
+        <module>ISCatalogus</module>
     </modules>
     <properties>
         <jackson.version>1.8.6</jackson.version>

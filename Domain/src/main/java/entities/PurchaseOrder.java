@@ -13,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PurchaseOrder extends PersistenceEntity {
+
     private OrderState orderState;
     @ManyToOne
     private List<OrderItem> orderItems;

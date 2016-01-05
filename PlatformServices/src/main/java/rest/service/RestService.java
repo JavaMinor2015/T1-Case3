@@ -13,6 +13,7 @@ import rest.repository.RestRepository;
 
 /**
  * Created by alex on 1/5/16.
+ * @param <T> the abstract entity for this service.
  */
 public abstract class RestService<T extends PersistenceEntity> {
 

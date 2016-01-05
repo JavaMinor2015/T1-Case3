@@ -10,7 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>PlatformServices</module>
-<<<<<<< HEAD
         <module>PcSWinkelen</module>
         <module>PcSBestellen</module>
         <module>BSBestellingenbeheer</module>
@@ -19,7 +18,6 @@
         <module>BSVoorraadbeheer</module>
         <module>ISCatalogus</module>
         <module>Domain</module>
->>>>>>> 022709d831b32add4a6aca1accce440806412929
     </modules>
     <properties>
         <jackson.version>1.8.6</jackson.version>

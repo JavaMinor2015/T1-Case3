@@ -13,5 +13,5 @@ import lombok.Setter;
 public abstract class PersistenceEntity {
     @Id
     @GeneratedValue
-    private long id;
+    private String id;
 }

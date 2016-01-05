@@ -1,13 +1,12 @@
 package peaseloxes.toolbox.util;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import peaseloxes.toolbox.util.testUtil.TestUtil;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

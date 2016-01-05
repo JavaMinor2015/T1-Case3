@@ -9,6 +9,10 @@ import java.util.Calendar;
  */
 public final class DateUtil {
 
+    public static final String DATE_MAY_NOT_BE_NULL = "Date may not be null";
+    public static final String CALENDAR_MAY_NOT_BE_NULL = "Calendar may not be null";
+    public static final String LOCAL_DATE_TIME_MAY_NOT_BE_NULL = "LocalDateTime may not be null";
+
     /**
      * Hidden constructor.
      */
@@ -31,7 +35,7 @@ public final class DateUtil {
      */
     public static java.util.Date toDate(final Calendar calendar) {
         if (calendar == null) {
-            throw new IllegalArgumentException("Calendar may not be null");
+            throw new IllegalArgumentException(CALENDAR_MAY_NOT_BE_NULL);
         }
         return calendar.getTime();
     }
@@ -44,7 +48,7 @@ public final class DateUtil {
      */
     public static Calendar toCalendar(final java.util.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -59,7 +63,7 @@ public final class DateUtil {
      */
     public static java.util.Date toDate(final LocalDateTime localDateTime) {
         if (localDateTime == null) {
-            throw new IllegalArgumentException("LocalDateTime may not be null");
+            throw new IllegalArgumentException(LOCAL_DATE_TIME_MAY_NOT_BE_NULL);
         }
         return java.util.Date.from(
                 localDateTime.atZone(ZoneId.systemDefault()).toInstant()
@@ -74,7 +78,7 @@ public final class DateUtil {
      */
     public static LocalDateTime toLocalDateTime(final java.util.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         return LocalDateTime.ofInstant(
                 date.toInstant(), ZoneId.systemDefault()
@@ -91,7 +95,7 @@ public final class DateUtil {
      */
     public static java.util.Date toDate(final java.sql.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         return new java.util.Date(date.getTime());
     }
@@ -110,7 +114,7 @@ public final class DateUtil {
      */
     public static java.sql.Date toSqlDate(final Calendar calendar) {
         if (calendar == null) {
-            throw new IllegalArgumentException("Calendar may not be null");
+            throw new IllegalArgumentException(CALENDAR_MAY_NOT_BE_NULL);
         }
         return new java.sql.Date(calendar.getTimeInMillis());
     }
@@ -125,7 +129,7 @@ public final class DateUtil {
      */
     public static Calendar toCalendar(final java.sql.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         final Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date.getTime());
@@ -142,7 +146,7 @@ public final class DateUtil {
      */
     public static java.sql.Date toSqlDate(final LocalDateTime localDateTime) {
         if (localDateTime == null) {
-            throw new IllegalArgumentException("LocalDateTime may not be null");
+            throw new IllegalArgumentException(LOCAL_DATE_TIME_MAY_NOT_BE_NULL);
         }
         return java.sql.Date.valueOf(localDateTime.toLocalDate());
     }
@@ -157,7 +161,7 @@ public final class DateUtil {
      */
     public static LocalDateTime toLocalDateTime(final java.sql.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         final java.util.Date d = toDate(date);
         return toLocalDateTime(d);
@@ -173,7 +177,7 @@ public final class DateUtil {
      */
     public static java.sql.Date toSqlDate(final java.util.Date date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date may not be null");
+            throw new IllegalArgumentException(DATE_MAY_NOT_BE_NULL);
         }
         return new java.sql.Date(date.getTime());
     }
@@ -192,7 +196,7 @@ public final class DateUtil {
      */
     public static LocalDateTime toLocalDateTime(final Calendar calendar) {
         if (calendar == null) {
-            throw new IllegalArgumentException("Calendar may not be null");
+            throw new IllegalArgumentException(CALENDAR_MAY_NOT_BE_NULL);
         }
         final java.util.Date date = toDate(calendar);
         return toLocalDateTime(date);
@@ -208,7 +212,7 @@ public final class DateUtil {
      */
     public static Calendar toCalendar(final LocalDateTime localDateTime) {
         if (localDateTime == null) {
-            throw new IllegalArgumentException("LocalDateTime may not be null");
+            throw new IllegalArgumentException(LOCAL_DATE_TIME_MAY_NOT_BE_NULL);
         }
         final java.util.Date date = toDate(localDateTime);
         return toCalendar(date);

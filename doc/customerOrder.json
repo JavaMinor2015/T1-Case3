@@ -1,9 +1,9 @@
 {
-  "order_id": "897846165794",
-  "customer_id": "1234",
-  "order_status": "OPEN",
-  "delivery_status": "NOT SCHEDULED",
-  "total_price": 650,
+  "orderId": "897846165794",
+  "customerId": "1234",
+  "orderStatus": "OPEN",
+  "deliveryStatus": "NOT SCHEDULED",
+  "totalPrice": 650,
   "version": 5,
   "products": [
     {
@@ -11,17 +11,17 @@
       "name": "bike",
       "amount": 5,
       "price": 125.50,
-      "links": [
+      "_links": [
         {
           "rel": "self",
           "href": "http://localhost:6789/products/98765/"
         },
         {
-          "rel": "previous_step",
+          "rel": "prev",
           "href": "http://localhost:6789/products/98764/"
         },
         {
-          "rel": "next_step",
+          "rel": "next",
           "href": "http://localhost:6789/products/98766/"
         },
         {
@@ -41,11 +41,11 @@
       "href": "http://localhost:6789/purchase_orders/897846165794/"
     },
     {
-      "rel": "previous_step",
+      "rel": "prev",
       "href": "http://localhost:6789/order_page"
     },
     {
-      "rel": "next_step",
+      "rel": "next",
       "href": "http://localhost:6789/confirm_page"
     },
     {

@@ -2,6 +2,7 @@ package entities;
 
 import entities.abs.PersistenceEntity;
 import java.util.List;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.Getter;
@@ -12,11 +13,15 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Entity
 public class PurchaseOrder extends PersistenceEntity {
 
+    private static final long serialVersionUID = 5720989074397364426L;
     private OrderState orderState;
-    @ManyToOne
+
+    @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
-    @OneToMany(mappedBy = "orders")
+
+    @ManyToOne
     private Customer customer;
 }

@@ -25,6 +25,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>TeamOneCaseThree</groupId>
+            <artifactId>PcSWinkelen</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>TeamOneCaseThree</groupId>
+            <artifactId>PcSBestellen</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
@@ -42,9 +52,9 @@
             <version>1.16.6</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.11.1.1</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.190</version>
         </dependency>
 
         <dependency>

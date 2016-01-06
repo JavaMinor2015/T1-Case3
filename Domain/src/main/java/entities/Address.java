@@ -2,6 +2,7 @@ package entities;
 
 import entities.abs.PersistenceEntity;
 import java.util.List;
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Entity
 public class Address extends PersistenceEntity {
+    private static final long serialVersionUID = -6059929196973281627L;
     private String city;
     private String streetname;
     private String number;

@@ -5,16 +5,14 @@ import java.util.List;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import rest.repository.RestRepository;
 
 /**
  * Created by alex on 1/5/16.
  * @param <T> the abstract entity for this service.
  */
+@RestController
 public abstract class RestService<T extends PersistenceEntity> {
 
     private static final Logger LOGGER = LogManager.getLogger(RestService.class.getName());
@@ -78,7 +76,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      *
      * @param id the entity's id.
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") final String id) {
         restRepository.delete(id);
     }

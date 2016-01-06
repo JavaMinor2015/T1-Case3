@@ -2,14 +2,22 @@ package teamonecasethree;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
  * The application server.
  */
 @SpringBootApplication
-public final class MainApplication {
+@ComponentScan({"service"})
+@EntityScan("entities")
+public class MainApplication {
 
-    private MainApplication() {
+    public MainApplication() {
 
     }
 
@@ -20,5 +28,14 @@ public final class MainApplication {
      */
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public EmbeddedDatabase dataSource() {
+        return new EmbeddedDatabaseBuilder().
+                setType(EmbeddedDatabaseType.H2).
+//                addScript("db-schema.sql").
+//                addScript("db-test-data.sql").
+                build();
     }
 }

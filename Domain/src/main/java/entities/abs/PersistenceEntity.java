@@ -1,7 +1,9 @@
 package entities.abs;
 
-import javax.persistence.GeneratedValue;
+import java.io.Serializable;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,8 +12,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class PersistenceEntity {
+@MappedSuperclass
+public abstract class PersistenceEntity implements Serializable {
+
+    private static final long serialVersionUID = 8286324917041072212L;
+
     @Id
-    @GeneratedValue
     private String id;
+
+    @Version
+    private int version;
 }

@@ -3,7 +3,6 @@ package service;
 import entities.Product;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import repository.ProductRepository;
@@ -14,7 +13,6 @@ import rest.service.RestService;
  */
 @RestController
 @RequestMapping(value = "/products")
-@EnableJpaRepositories(value = "repository")
 public class ShoppingService extends RestService<Product> {
 
     @Autowired
@@ -24,5 +22,9 @@ public class ShoppingService extends RestService<Product> {
     @Override
     public void initRepository() {
         setRestRepository(repository);
+        repository.save(new Product("1", "bicycle", 1200.99));
+        repository.save(new Product("2", "tricycle", 400.15));
+        repository.save(new Product("3", "handbrake", 15.50));
+        repository.save(new Product("4", "headlight", 5.95));
     }
 }

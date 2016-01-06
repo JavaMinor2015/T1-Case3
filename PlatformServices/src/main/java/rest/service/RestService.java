@@ -12,6 +12,7 @@ import rest.repository.RestRepository;
  * Created by alex on 1/5/16.
  * @param <T> the abstract entity for this service.
  */
+@CrossOrigin
 @RestController
 public abstract class RestService<T extends PersistenceEntity> {
 
@@ -41,7 +42,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      *
      * @return all known entities.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public List<T> getAll() {
         return restRepository.findAll();
     }
@@ -51,7 +52,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      *
      * @param t the entity to save.
      */
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public void post(@RequestBody final T t) {
         restRepository.save(t);
     }

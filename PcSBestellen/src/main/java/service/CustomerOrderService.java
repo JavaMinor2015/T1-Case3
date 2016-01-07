@@ -1,6 +1,9 @@
 package service;
 
+import entities.Product;
 import entities.rest.CustomerOrder;
+import entities.rest.CustomerProduct;
+import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -9,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import repository.CustomerOrderRepository;
+import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
-import rest.util.HateoasUtil;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * @author peaseloxes
@@ -25,6 +25,9 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Autowired
     private CustomerOrderRepository repository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @PostConstruct
     @Override
@@ -49,6 +52,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @Override
     public HttpEntity<HateoasResponse> post(@RequestBody CustomerOrder customerOrder) {
         // TODO implement mongo post
+        customerOrder.getProducts().forEach(this::stockDecrease);
         return super.post(customerOrder);
     }
 
@@ -62,5 +66,13 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     public HttpEntity<HateoasResponse> delete(@PathVariable("id") String id) {
         // TODO implement mongo delete
         return super.delete(id);
+    }
+
+    private void stockDecrease(CustomerProduct customerProduct) {
+        String id = customerProduct.getId();
+        Product product = productRepository.getOne(id);
+        int newStock = product.getStock() - customerProduct.getAmount();
+        product.setStock(newStock);
+        productRepository.save(product);
     }
 }

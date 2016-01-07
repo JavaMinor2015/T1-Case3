@@ -3,6 +3,7 @@ package entities.rest;
 import entities.abs.PersistenceEntity;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import lombok.*;
@@ -25,7 +26,7 @@ public class CustomerOrder extends PersistenceEntity {
     private String deliveryStatus;
     private double totalPrice;
 
-    @OneToMany(mappedBy = "customerOrder")
+    @OneToMany(mappedBy = "customerOrder", cascade = CascadeType.ALL)
     private List<CustomerProduct> products = new ArrayList<>();
 
 

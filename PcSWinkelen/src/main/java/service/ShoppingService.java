@@ -25,10 +25,10 @@ public class ShoppingService extends RestService<Product> {
     @Override
     public void initRepository() {
         setRestRepository(repository);
-        repository.save(new Product("1", "bicycle", 1200.99));
-        repository.save(new Product("2", "tricycle", 400.15));
-        repository.save(new Product("3", "handbrake", 15.50));
-        repository.save(new Product("4", "headlight", 5.95));
+        repository.save(new Product("1", "bicycle", 1200.99, 50));
+        repository.save(new Product("2", "tricycle", 400.15, 50));
+        repository.save(new Product("3", "handbrake", 15.50, 50));
+        repository.save(new Product("4", "headlight", 5.95, 50));
     }
 
     @Override

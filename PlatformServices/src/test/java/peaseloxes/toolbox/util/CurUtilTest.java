@@ -1,13 +1,11 @@
 package peaseloxes.toolbox.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import peaseloxes.toolbox.util.testUtil.TestUtil;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

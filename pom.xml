@@ -10,6 +10,14 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>PlatformServices</module>
+        <module>PcSWinkelen</module>
+        <module>PcSBestellen</module>
+        <module>BSBestellingenbeheer</module>
+        <module>BSKlantbeheer</module>
+        <module>BSCatalogusbeheer</module>
+        <module>BSVoorraadbeheer</module>
+        <module>ISCatalogus</module>
+        <module>Domain</module>
     </modules>
     <properties>
         <jackson.version>1.8.6</jackson.version>
@@ -41,6 +49,11 @@
         </profile>
     </profiles>
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.6</version>
+        </dependency>
         <dependency>
             <groupId>org.codehaus.sonar-plugins.java</groupId>
             <artifactId>sonar-jacoco-listeners</artifactId>

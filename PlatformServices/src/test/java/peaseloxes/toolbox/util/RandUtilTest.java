@@ -4,7 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import peaseloxes.toolbox.util.testUtil.TestUtil;
-
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;

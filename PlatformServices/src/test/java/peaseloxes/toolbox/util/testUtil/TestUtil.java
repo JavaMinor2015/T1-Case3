@@ -19,7 +19,7 @@ public final class TestUtil {
             constructor.setAccessible(true);
 
             // because 100% :)
-            if(!clazz.isInstance(constructor.newInstance())) {
+            if (!clazz.isInstance(constructor.newInstance())) {
                 return false;
             }
         }

@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import repository.CustomerOrderRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * @author peaseloxes
@@ -45,18 +49,18 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @Override
     public HttpEntity<HateoasResponse> post(@RequestBody CustomerOrder customerOrder) {
         // TODO implement mongo post
-        return null;
+        return super.post(customerOrder);
     }
 
     @Override
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
         // TODO implement mongo update
-        return null;
+        return super.update(id, customerOrder);
     }
 
     @Override
     public HttpEntity<HateoasResponse> delete(@PathVariable("id") String id) {
         // TODO implement mongo delete
-        return null;
+        return super.delete(id);
     }
 }

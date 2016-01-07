@@ -1,6 +1,7 @@
 package entities.abs;
 
 import java.io.Serializable;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
@@ -18,6 +19,7 @@ public abstract class PersistenceEntity implements Serializable {
     private static final long serialVersionUID = 8286324917041072212L;
 
     @Id
+    @GeneratedValue
     private String id;
 
     @Version

@@ -10,7 +10,7 @@ import org.springframework.hateoas.ResourceSupport;
 public class HateoasResponse extends ResourceSupport {
 
     @Getter
-    private static final String VERSION = "3.0";
+    private final String version = "3.0";
 
     @Getter
     private final Object content;

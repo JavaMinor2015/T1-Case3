@@ -27,6 +27,17 @@ public final class HateoasUtil {
      * Workaround for ControllerLinkBuilder testing issues.
      *
      * @param clazz  the controller class.
+     * @param params the method params.
+     * @return a link with the path specified in the calling method and the provided rel.
+     */
+    public static Link makeLink(final Class<? extends RestService> clazz, final Object... params) {
+        return makeLink(clazz, 3, "self", params);
+    }
+
+    /**
+     * Workaround for ControllerLinkBuilder testing issues.
+     *
+     * @param clazz  the controller class.
      * @param rel    the relationship.
      * @param params the method params.
      * @return a link with the path specified in the calling method and the provided rel.

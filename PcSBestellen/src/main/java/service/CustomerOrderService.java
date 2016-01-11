@@ -3,14 +3,10 @@ package service;
 import entities.Product;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
@@ -19,6 +15,7 @@ import rest.util.HateoasResponse;
 /**
  * @author peaseloxes
  */
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/customerorders")
 public class CustomerOrderService extends RestService<CustomerOrder> {

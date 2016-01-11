@@ -43,10 +43,13 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
                 .build();
         testOrder.setId("1");
 
-        CustomerProduct testProduct = new CustomerProduct("1", "TEST", 1, 0.00);
-        testProduct.setCustomerOrder(testOrder);
+        CustomerProduct testProduct1 = new CustomerProduct("1", "TEST", 1, 0.00);
+        CustomerProduct testProduct2 = new CustomerProduct("2", "TEST", 2, 5.00);
+        testProduct1.setCustomerOrder(testOrder);
+        testProduct2.setCustomerOrder(testOrder);
         List<CustomerProduct> testList = new ArrayList<>();
-        testList.add(testProduct);
+        testList.add(testProduct1);
+        testList.add(testProduct2);
         testOrder.setProducts(testList);
         repository.save(testOrder);
 

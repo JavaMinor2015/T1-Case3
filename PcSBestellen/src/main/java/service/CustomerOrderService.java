@@ -12,6 +12,9 @@ import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author peaseloxes
  */
@@ -38,7 +41,16 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
                 .totalPrice(0)
                 .build();
         testOrder.setId("1");
+
+        CustomerProduct testProduct = new CustomerProduct("1", "TEST", 1, 0.00);
+        testProduct.setCustomerOrder(testOrder);
+        List<CustomerProduct> testList = new ArrayList<>();
+        testList.add(testProduct);
+        testOrder.setProducts(testList);
         repository.save(testOrder);
+
+
+
     }
 
     @Override

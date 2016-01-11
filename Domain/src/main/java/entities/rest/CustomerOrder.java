@@ -30,4 +30,6 @@ public class CustomerOrder extends PersistenceEntity {
     private List<CustomerProduct> products = new ArrayList<>();
 
 
+
+
 }

@@ -10,7 +10,6 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import rest.service.RestService;
 
 /**
  * @author peaseloxes
@@ -18,6 +17,7 @@ import rest.service.RestService;
 public final class HateoasUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(HateoasUtil.class.getName());
+    public static final int DEFAULT_DEPTH = 3;
 
     private HateoasUtil() {
         // hide constructor
@@ -30,8 +30,8 @@ public final class HateoasUtil {
      * @param params the method params.
      * @return a link with the path specified in the calling method and the provided rel.
      */
-    public static Link makeLink(final Class<? extends RestService> clazz, final Object... params) {
-        return makeLink(clazz, 3, "self", params);
+    public static Link makeLink(final Class<?> clazz, final Object... params) {
+        return makeLink(clazz, DEFAULT_DEPTH, "self", params);
     }
 
     /**
@@ -42,8 +42,8 @@ public final class HateoasUtil {
      * @param params the method params.
      * @return a link with the path specified in the calling method and the provided rel.
      */
-    public static Link makeLink(final Class<? extends RestService> clazz, final String rel, final Object... params) {
-        return makeLink(clazz, 3, rel, params);
+    public static Link makeLink(final Class<?> clazz, final String rel, final Object... params) {
+        return makeLink(clazz, DEFAULT_DEPTH, rel, params);
     }
 
     /**
@@ -55,7 +55,8 @@ public final class HateoasUtil {
      * @param params method params
      * @return a link with the path specified in the calling method and the provided rel.
      */
-    public static Link makeLink(final Class<? extends RestService> clazz, final int depth, final String rel, final Object... params) {
+    public static Link makeLink(final Class<?> clazz, final int depth, final String rel,
+                                final Object... params) {
         try {
             // TODO: kill it with fire
             final List<Class> classes = new ArrayList<>(params.length);

@@ -24,12 +24,6 @@ public class CustomerService extends RestService<Customer> {
     @Override
     public void initRepository() {
         setRestRepository(repository);
-//        Address address = new Address();
-//        address.setCity("Dordrecht");
-//        address.setNumber("5");
-//        address.setStreetname("Straat");
-//        address.setZipcode("1234AB");
-
         Customer customer = new Customer();
         customer.setFirstName("First");
         customer.setInitials("O.R.");

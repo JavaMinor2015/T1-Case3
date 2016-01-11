@@ -4,7 +4,7 @@ package global;
  * Created by alex on 1/11/16.
  */
 public enum Globals {
-    ;
+    INSTANCE;
 
     public static final String SELF = "self";
     public static final String NEXT = "next";

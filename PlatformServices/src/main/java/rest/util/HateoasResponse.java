@@ -7,6 +7,7 @@ import org.springframework.hateoas.ResourceSupport;
 /**
  * @author peaseloxes
  */
+@SuppressWarnings("findbugs:SS_SHOULD_BE_STATIC")
 public class HateoasResponse extends ResourceSupport {
 
     @Getter

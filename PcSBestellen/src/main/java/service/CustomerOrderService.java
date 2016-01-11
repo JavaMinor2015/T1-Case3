@@ -21,6 +21,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/customerorders")
+@SuppressWarnings("squid:UnusedPrivateMethod")
 public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Autowired

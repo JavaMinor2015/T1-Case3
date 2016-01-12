@@ -35,7 +35,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         setRestRepository(repository);
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
-                .customerId("1234")
+                .customerId("1")
                 .orderStatus("OPEN")
                 .deliveryStatus("NOT SCHEDULED")
                 .totalPrice(0)

@@ -28,6 +28,14 @@ public class Product extends PersistenceEntity {
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
 
+    /**
+     * Product constructor.
+     *
+     * @param id    the product id.
+     * @param name  the product name.
+     * @param price the product price.
+     * @param stock the amount in stock.
+     */
     public Product(final String id, final String name, final double price, final int stock) {
         this.setId(id);
         this.name = name;

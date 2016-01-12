@@ -41,6 +41,12 @@ public class CustomerService extends RestService<Customer> {
         repository.save(customer);
     }
 
+    /**
+     * Retrieve all orders given a customer id.
+     *
+     * @param id the customer id.
+     * @return a list of orders.
+     */
     @RequestMapping(value = "/{id}/orders", method = RequestMethod.GET)
     public HttpEntity<HateoasResponse> getByCustomer(@PathVariable("id") String id) {
         List<CustomerOrder> list = customerOrderRepository.findByCustomerId(id);

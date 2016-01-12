@@ -11,7 +11,7 @@ import org.springframework.hateoas.ResourceSupport;
 public class HateoasResponse extends ResourceSupport {
 
     @Getter
-    private final String version = "3.0";
+    private final String version = "5.0";
 
     @Getter
     private final Object content;
@@ -24,5 +24,22 @@ public class HateoasResponse extends ResourceSupport {
     @JsonCreator
     public HateoasResponse(final Object content) {
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof HateoasResponse)) {
+            return false;
+        }
+        HateoasResponse other = (HateoasResponse) obj;
+               
+
+        return true;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

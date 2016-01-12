@@ -1,10 +1,9 @@
 package entities.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import entities.abs.PersistenceEntity;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * @author peaseloxes
@@ -15,14 +14,12 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(collection = "CustomerProduct")
 public class CustomerProduct extends PersistenceEntity {
+    private static final long serialVersionUID = -7699374375063811525L;
     private String name;
     private int amount;
     private double price;
-
-    @JsonIgnore
-    @ManyToOne
-    private CustomerOrder customerOrder;
 
     public CustomerProduct(final String id, final String name, final int amount, final double price) {
         this.setId(id);

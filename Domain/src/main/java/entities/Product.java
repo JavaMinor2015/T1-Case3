@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import entities.abs.PersistenceEntity;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class Product extends PersistenceEntity {
     private int stock;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 
     /**
@@ -41,5 +42,10 @@ public class Product extends PersistenceEntity {
         this.name = name;
         this.price = price;
         this.stock = stock;
+    }
+
+    @Override
+    public String toString() {
+        return name + "," + price + "," + stock;
     }
 }

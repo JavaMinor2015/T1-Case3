@@ -7,7 +7,11 @@ import org.springframework.hateoas.ResourceSupport;
 /**
  * @author peaseloxes
  */
+@SuppressWarnings("findbugs:SS_SHOULD_BE_STATIC")
 public class HateoasResponse extends ResourceSupport {
+
+    @Getter
+    private final String version = "3.0";
 
     @Getter
     private final Object content;

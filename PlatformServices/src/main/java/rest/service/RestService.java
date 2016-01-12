@@ -1,19 +1,18 @@
 package rest.service;
 
 import entities.abs.PersistenceEntity;
+import global.Globals;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Created by alex on 1/5/16.
@@ -52,7 +51,11 @@ public abstract class RestService<T extends PersistenceEntity> {
         final T result = restRepository.findOne(id);
         return HateoasUtil.build(
                 result,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).getById(id)))
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
         );
     }
 
@@ -65,13 +68,27 @@ public abstract class RestService<T extends PersistenceEntity> {
     public HttpEntity<HateoasResponse> getAll() {
         final List<T> entities = restRepository.findAll();
         final List<HateoasResponse> result = new ArrayList<>(entities.size());
-        result.addAll(entities.stream().map(entity -> HateoasUtil.toHateoas(
-                entity,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).getById(entity.getId())))
-        )).collect(Collectors.toList()));
+
+        // do not convert to lambda while Hateoas workaround is in place
+        for (T entity : entities) {
+            result.add(HateoasUtil.toHateoas(
+                    entity,
+                    // eww
+                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.SELF),
+                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.NEXT),
+                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.PREV),
+                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.UPDATE),
+                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.DELETE)
+            ));
+        }
+
         return HateoasUtil.build(
                 result,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).getAll()))
+                HateoasUtil.makeLink(getClazz(), Globals.SELF),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE)
         );
     }
 
@@ -86,7 +103,11 @@ public abstract class RestService<T extends PersistenceEntity> {
         restRepository.save(t);
         return HateoasUtil.build(
                 t,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).post(t)))
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, t.getId())
         );
     }
 
@@ -106,7 +127,12 @@ public abstract class RestService<T extends PersistenceEntity> {
         restRepository.save(t);
         return HateoasUtil.build(
                 t,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).update(id, t)))
+                // id = t.getId()
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, id, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, id, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id, t.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id, t.getId())
         );
     }
 
@@ -121,7 +147,11 @@ public abstract class RestService<T extends PersistenceEntity> {
         restRepository.delete(id);
         return HateoasUtil.build(
                 id,
-                HateoasUtil.getDefaultLinks(linkTo(methodOn(getClazz()).delete(id)))
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
         );
     }
 }

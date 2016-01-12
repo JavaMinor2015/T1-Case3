@@ -3,24 +3,25 @@ package service;
 import entities.Product;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author peaseloxes
  */
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/customerorders")
+@SuppressWarnings("squid:UnusedPrivateMethod")
 public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Autowired
@@ -41,7 +42,19 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
                 .totalPrice(0)
                 .build();
         testOrder.setId("1");
+
+        CustomerProduct testProduct1 = new CustomerProduct("1", "TEST", 1, 0.00);
+        CustomerProduct testProduct2 = new CustomerProduct("2", "TEST", 2, 5.00);
+        testProduct1.setCustomerOrder(testOrder);
+        testProduct2.setCustomerOrder(testOrder);
+        List<CustomerProduct> testList = new ArrayList<>();
+        testList.add(testProduct1);
+        testList.add(testProduct2);
+        testOrder.setProducts(testList);
         repository.save(testOrder);
+
+
+
     }
 
     @Override

@@ -3,6 +3,8 @@ package service;
 import entities.Product;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -11,9 +13,6 @@ import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author peaseloxes
@@ -36,7 +35,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         setRestRepository(repository);
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
-                .customerId("1234")
+                .customerId("1")
                 .orderStatus("OPEN")
                 .deliveryStatus("NOT SCHEDULED")
                 .totalPrice(0)
@@ -44,17 +43,12 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         testOrder.setId("1");
 
         CustomerProduct testProduct1 = new CustomerProduct("1", "TEST", 1, 0.00);
-        CustomerProduct testProduct2 = new CustomerProduct("2", "TEST", 2, 5.00);
-        testProduct1.setCustomerOrder(testOrder);
-        testProduct2.setCustomerOrder(testOrder);
+        CustomerProduct testProduct2 = new CustomerProduct("2", "TEST", 2, 2.00);
         List<CustomerProduct> testList = new ArrayList<>();
         testList.add(testProduct1);
         testList.add(testProduct2);
         testOrder.setProducts(testList);
         repository.save(testOrder);
-
-
-
     }
 
     @Override
@@ -63,22 +57,9 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     }
 
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody CustomerOrder customerOrder) {
-        // TODO implement mongo post
-        customerOrder.getProducts().forEach(this::stockDecrease);
-        return super.post(customerOrder);
-    }
-
-    @Override
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
         // TODO implement mongo update
         return super.update(id, customerOrder);
-    }
-
-    @Override
-    public HttpEntity<HateoasResponse> delete(@PathVariable("id") String id) {
-        // TODO implement mongo delete
-        return super.delete(id);
     }
 
     private void stockDecrease(CustomerProduct customerProduct) {

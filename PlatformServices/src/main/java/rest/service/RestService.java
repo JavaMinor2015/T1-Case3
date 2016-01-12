@@ -1,5 +1,6 @@
 package rest.service;
 
+import com.google.common.collect.Lists;
 import entities.abs.PersistenceEntity;
 import global.Globals;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public HttpEntity<HateoasResponse> getAll() {
-        final List<T> entities = restRepository.findAll();
+        final List<T> entities = Lists.newArrayList(restRepository.findAll());
         final List<HateoasResponse> result = new ArrayList<>(entities.size());
 
         // do not convert to lambda while Hateoas workaround is in place

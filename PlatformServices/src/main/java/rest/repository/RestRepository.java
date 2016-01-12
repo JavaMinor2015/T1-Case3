@@ -1,6 +1,7 @@
 package rest.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import entities.abs.PersistenceEntity;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -8,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * @param <T> the abstract entity for this service.
  */
 @Repository
-public interface RestRepository<T> extends JpaRepository<T, String> {
+public interface RestRepository<T extends PersistenceEntity> extends CrudRepository<T, String> {
 }

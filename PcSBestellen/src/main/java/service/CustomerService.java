@@ -1,13 +1,18 @@
 package service;
 
 import entities.Customer;
+import entities.rest.CustomerOrder;
+import global.Globals;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpEntity;
+import org.springframework.web.bind.annotation.*;
+import repository.CustomerOrderRepository;
 import repository.CustomerRepository;
 import rest.service.RestService;
+import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
 
 /**
  * Created by alex on 1/11/16.
@@ -16,6 +21,9 @@ import rest.service.RestService;
 @RestController
 @RequestMapping(value = "/customers")
 public class CustomerService extends RestService<Customer> {
+
+    @Autowired
+    private CustomerOrderRepository customerOrderRepository;
 
     @Autowired
     private CustomerRepository repository;
@@ -31,6 +39,19 @@ public class CustomerService extends RestService<Customer> {
         customer.setAddress(null);
         customer.setDeliveryAddress(null);
         repository.save(customer);
+    }
+
+    @RequestMapping(value = "/{id}/orders", method = RequestMethod.GET)
+    public HttpEntity<HateoasResponse> getByCustomer(@PathVariable("id") String id) {
+        List<CustomerOrder> list = customerOrderRepository.findByCustomerId(id);
+        return HateoasUtil.build(
+                list,
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
+        );
     }
 
     @Override

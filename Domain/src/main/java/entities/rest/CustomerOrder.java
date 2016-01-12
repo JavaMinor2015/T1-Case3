@@ -27,7 +27,7 @@ public class CustomerOrder extends PersistenceEntity {
     private String deliveryStatus;
     private double totalPrice;
 
-    @ElementCollection(targetClass=CustomerProduct.class)
+    @ElementCollection(targetClass = CustomerProduct.class)
     private List<CustomerProduct> products = new ArrayList<>();
 
 

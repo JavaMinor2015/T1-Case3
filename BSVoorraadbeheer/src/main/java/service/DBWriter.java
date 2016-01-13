@@ -6,6 +6,7 @@ import entities.abs.PersistenceEntity;
 import entity.BuildStatus;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,16 @@ import rest.repository.RestRepository;
 @Service
 public class DBWriter<T extends PersistenceEntity> {
 
-    private static final int MIN = 5000;
-    private static final int MAX = 15000;
+    private static final int DEFAULT_MIN = 5000;
+    private static final int DEFAULT_MAX = 15000;
+
+    @Setter
+    private int min = DEFAULT_MIN;
+    @Setter
+    private int max = DEFAULT_MAX;
 
     @Autowired
+    @Setter
     private BuildRepository buildRepository;
 
     private static final Logger LOGGER = LogManager.getLogger(DBWriter.class);
@@ -57,8 +64,7 @@ public class DBWriter<T extends PersistenceEntity> {
                     @Override
                     public void run() {
                         try {
-                            // it's a kind of magic
-                            Thread.sleep(RandUtil.rInt(MIN, MAX));
+                            Thread.sleep(RandUtil.rInt(min, max));
                             final List<T> result = Lists.newArrayList(repository.findAll());
                             final List<String> lines = result.stream().map(T::toString).collect(Collectors.toList());
                             IOUtil.writeLines("db-" + identifier + ".csv", lines);

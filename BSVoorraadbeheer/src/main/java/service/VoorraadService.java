@@ -4,6 +4,7 @@ import entities.Product;
 import entity.BuildStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
@@ -27,12 +28,15 @@ import rest.util.HateoasUtil;
 public class VoorraadService extends RestService<Product> {
 
     @Autowired
+    @Setter
     private ProductRepository productRepository;
 
     @Autowired
+    @Setter
     private BuildRepository buildRepository;
 
     @Autowired
+    @Setter
     private DBWriter<Product> writer;
 
     @Override
@@ -65,9 +69,16 @@ public class VoorraadService extends RestService<Product> {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    /**
+     * Request a build of the database.
+     *
+     * @return the acceptance of the build and a status identifier token.
+     */
     @RequestMapping(value = "/request")
     public HttpEntity<HateoasResponse> requestBuild() {
-        final BuildStatus status = new BuildStatus(String.valueOf(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()));
+        final BuildStatus status = new BuildStatus(
+                String.valueOf(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond())
+        );
         buildRepository.save(status);
         writer.write(productRepository, Product.class, status.getId());
         return HateoasUtil.build(
@@ -76,6 +87,12 @@ public class VoorraadService extends RestService<Product> {
         );
     }
 
+    /**
+     * Given a status identifier request the status of the requested build.
+     *
+     * @param id the status identifier.
+     * @return true if done, false otherwise.
+     */
     @RequestMapping(value = "/request/{identifier}")
     public HttpEntity<HateoasResponse> requestStatus(@PathVariable("identifier") final String id) {
         if (buildRepository.exists(id)) {

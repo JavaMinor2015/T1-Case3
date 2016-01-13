@@ -2,6 +2,7 @@ package service;
 
 import entities.Product;
 import javax.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ public class ShoppingService extends RestService<Product> {
     private static final int THOUSAND = 1000;
 
     @Autowired
+    @Setter
     private ProductRepository repository;
 
     @PostConstruct

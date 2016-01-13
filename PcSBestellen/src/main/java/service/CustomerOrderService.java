@@ -9,6 +9,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
@@ -57,18 +59,23 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         return this.getClass();
     }
 
-//    @Override
-//    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
-//        HttpEntity<HateoasResponse> response = super.post(customerOrder);
-//        String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
-//        CustomerOrder order = repository.findOne(custOrderId);
-//        order.setOrderId(custOrderId);
-//        return super.post(order);
-//    }
+    @Override
+    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
+        if (customerOrder.getId() != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        HttpEntity<HateoasResponse> response = super.post(customerOrder);
+        String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
+        CustomerOrder order = repository.findOne(custOrderId);
+        order.setOrderId(custOrderId);
+        // TODO stock decrease
+        return super.post(order);
+    }
 
     @Override
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
         // TODO implement mongo update
+        // TODO stock decrease
         return super.update(id, customerOrder);
     }
 

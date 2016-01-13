@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>TeamOneCaseThree</groupId>
-            <artifactId>BSCatalogusbeheer</artifactId>
+            <artifactId>BSVoorraadbeheer</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

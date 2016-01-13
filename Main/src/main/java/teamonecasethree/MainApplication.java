@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * The application server.
@@ -19,6 +20,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @EntityScan("entities")
 @EnableJpaRepositories(value = "repository")
 @EnableMongoRepositories(value = "repository")
+@EnableAsync
 public class MainApplication {
 
     public MainApplication() {

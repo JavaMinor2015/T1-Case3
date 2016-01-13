@@ -5,6 +5,7 @@ import entities.rest.CustomerOrder;
 import global.Globals;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,11 @@ import rest.util.HateoasUtil;
 public class CustomerService extends RestService<Customer> {
 
     @Autowired
+    @Setter
     private CustomerOrderRepository customerOrderRepository;
 
     @Autowired
+    @Setter
     private CustomerRepository repository;
 
     @PostConstruct

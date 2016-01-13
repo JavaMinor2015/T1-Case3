@@ -31,6 +31,11 @@
             <artifactId>BSKlantbeheer</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>TeamOneCaseThree</groupId>
+            <artifactId>BSVoorraadbeheer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 

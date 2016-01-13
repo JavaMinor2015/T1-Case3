@@ -1,5 +1,6 @@
 package service;
 
+import entities.OrderState;
 import entities.Product;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
@@ -36,7 +37,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
                 .customerId("1")
-                .orderStatus("OPEN")
+                .orderStatus(OrderState.RUNNING.toString())
                 .deliveryStatus("NOT SCHEDULED")
                 .totalPrice(0)
                 .build();
@@ -55,6 +56,15 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     public Class<? extends RestService<CustomerOrder>> getClazz() {
         return this.getClass();
     }
+
+//    @Override
+//    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
+//        HttpEntity<HateoasResponse> response = super.post(customerOrder);
+//        String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
+//        CustomerOrder order = repository.findOne(custOrderId);
+//        order.setOrderId(custOrderId);
+//        return super.post(order);
+//    }
 
     @Override
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {

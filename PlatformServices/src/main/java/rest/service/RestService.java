@@ -45,10 +45,15 @@ public abstract class RestService<T extends PersistenceEntity> {
      */
     public abstract Class<? extends RestService<T>> getClazz();
 
+    /**
+     * Retrieve the options for this rest service.
+     *
+     * @return a header with allowed options.
+     */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
     public HttpEntity<String> options() {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("allow","HEAD,GET,PUT,DELETE,POST,OPTIONS");
+        map.add("allow", "HEAD,GET,PUT,DELETE,POST,OPTIONS");
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 

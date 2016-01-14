@@ -2,9 +2,11 @@ package service;
 
 import entities.Product;
 import javax.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import peaseloxes.toolbox.util.RandUtil;
 import repository.ProductRepository;
 import rest.service.RestService;
 
@@ -18,17 +20,21 @@ import rest.service.RestService;
 @RequestMapping(value = "/products")
 public class ShoppingService extends RestService<Product> {
 
+    private static final int HUNDRED = 100;
+    private static final int THOUSAND = 1000;
+
     @Autowired
+    @Setter
     private ProductRepository repository;
 
     @PostConstruct
     @Override
     public void initRepository() {
         setRestRepository(repository);
-        repository.save(new Product("1", "bicycle", 1200.99, 50));
-        repository.save(new Product("2", "tricycle", 400.15, 50));
-        repository.save(new Product("3", "handbrake", 15.50, 50));
-        repository.save(new Product("4", "headlight", 5.95, 50));
+        repository.save(new Product("1", "bicycle", RandUtil.rInt(THOUSAND), RandUtil.rInt(HUNDRED)));
+        repository.save(new Product("2", "tricycle", RandUtil.rInt(THOUSAND), RandUtil.rInt(HUNDRED)));
+        repository.save(new Product("3", "handbrake", RandUtil.rInt(THOUSAND), RandUtil.rInt(HUNDRED)));
+        repository.save(new Product("4", "headlight", RandUtil.rInt(THOUSAND), RandUtil.rInt(HUNDRED)));
     }
 
     @Override

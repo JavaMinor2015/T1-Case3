@@ -3,6 +3,7 @@ package peaseloxes.toolbox.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -41,5 +42,19 @@ public final class IOUtil {
             LOGGER.error(e.getMessage(), e);
         }
         return lines;
+    }
+
+    /**
+     * Write all lines to a file.
+     *
+     * @param fileName the name of the file
+     * @param lines    the lines to write
+     */
+    public static void writeLines(final String fileName, final List<String> lines) {
+        try {
+            Files.write(Paths.get(fileName), lines);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }

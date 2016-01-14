@@ -1,5 +1,6 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entities.abs.PersistenceEntity;
 import java.util.List;
 import javax.persistence.Entity;
@@ -19,8 +20,12 @@ public class Address extends PersistenceEntity {
     private String streetname;
     private String number;
     private String zipcode;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "address")
     private List<Customer> customersAddress;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "deliveryAddress")
     private List<Customer> customersDeliveryAddress;
 }

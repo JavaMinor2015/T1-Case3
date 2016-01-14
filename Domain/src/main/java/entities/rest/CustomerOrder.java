@@ -3,10 +3,10 @@ package entities.rest;
 import entities.abs.PersistenceEntity;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * @author peaseloxes
@@ -17,8 +17,9 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Builder
+@Document(collection = "CustomerOrder")
 public class CustomerOrder extends PersistenceEntity {
-    // TODO mongodb persistence
+    private static final long serialVersionUID = -359500118765361885L;
 
     private String orderId;
     private String customerId;
@@ -26,7 +27,7 @@ public class CustomerOrder extends PersistenceEntity {
     private String deliveryStatus;
     private double totalPrice;
 
-    @OneToMany(mappedBy = "customerOrder", cascade = CascadeType.ALL)
+    @ElementCollection(targetClass = CustomerProduct.class)
     private List<CustomerProduct> products = new ArrayList<>();
 
 

@@ -6,9 +6,11 @@ import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * The application server.
@@ -17,6 +19,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @ComponentScan({"service"})
 @EntityScan("entities")
 @EnableJpaRepositories(value = "repository")
+@EnableMongoRepositories(value = "repository")
+@EnableAsync
 public class MainApplication {
 
     public MainApplication() {

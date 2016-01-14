@@ -10,4 +10,5 @@ import rest.repository.RestRepository;
  */
 @Repository
 public interface AddressRepository extends JpaRepository<Address, String>, RestRepository<Address> {
+    Address findByZipcodeAndNumber(final String zipcode, final String number);
 }

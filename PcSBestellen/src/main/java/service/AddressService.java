@@ -1,14 +1,19 @@
 package service;
 
 import entities.Address;
+import global.Globals;
 import javax.annotation.PostConstruct;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import repository.AddressRepository;
 import rest.service.RestService;
+import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
 
 /**
  * Created by alex on 1/14/16.
@@ -33,6 +38,23 @@ public class AddressService extends RestService<Address> {
         sample.setNumber("5A");
         sample.setCity("Sin");
         addressRepository.save(sample);
+    }
+
+    @Override
+    public HttpEntity<HateoasResponse> post(@RequestBody final Address address) {
+        Address existing = addressRepository.findByZipcodeAndNumber(address.getZipcode(), address.getNumber());
+        if (existing == null) {
+            return super.post(address);
+        } else {
+            return HateoasUtil.build(
+                    existing,
+                    HateoasUtil.makeLink(getClazz(), Globals.SELF, existing.getId()),
+                    HateoasUtil.makeLink(getClazz(), Globals.NEXT, existing.getId()),
+                    HateoasUtil.makeLink(getClazz(), Globals.PREV, existing.getId()),
+                    HateoasUtil.makeLink(getClazz(), Globals.UPDATE, existing.getId()),
+                    HateoasUtil.makeLink(getClazz(), Globals.DELETE, existing.getId())
+            );
+        }
     }
 
     @Override

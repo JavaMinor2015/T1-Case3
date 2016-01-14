@@ -4,7 +4,6 @@ import entities.Product;
 import entity.BuildStatus;
 import java.util.Arrays;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -42,17 +41,15 @@ public class DBWriterTest {
 
     @PrepareForTest(IOUtil.class)
     @Test
-    @Ignore(value = "Static not being mocked properly, multi thread confusing for coverage analyser, log4j mocking issues")
+//    @Ignore(value = "Static not being mocked properly, multi thread confusing for coverage analyser, log4j mocking issues")
     public void testWrite() throws Exception {
+        // actual file writing is done by IOUtil
         PowerMockito.mockStatic(IOUtil.class);
         Mockito.when(mockProductRepository.findAll()).thenReturn(Arrays.asList(new Product()));
         Mockito.when(mockBuildRepository.save(any(BuildStatus.class))).thenReturn(new BuildStatus("1"));
         Mockito.when(mockBuildRepository.exists("1")).thenReturn(true);
         // no errors
         dbWriter.write(mockProductRepository, Product.class, "1");
-        // actual file writing is done by IOUtil
-        // TODO test multithread? how?
-
         try {
             new DBWriter<BuildStatus>().write(Mockito.mock(BuildRepository.class), BuildStatus.class, "1");
             fail("illegal argument expected");
@@ -61,5 +58,15 @@ public class DBWriterTest {
         }
     }
 
-
+    @PrepareForTest(IOUtil.class)
+    @Test
+    public void testDoWritingHereBecauseUnitTestingSucksOtherWise() throws Exception {
+        PowerMockito.mockStatic(IOUtil.class);
+        Mockito.when(mockProductRepository.findAll()).thenReturn(Arrays.asList(new Product()));
+        Mockito.when(mockBuildRepository.save(any(BuildStatus.class))).thenReturn(new BuildStatus("1"));
+        Mockito.when(mockBuildRepository.exists("1")).thenReturn(true);
+        Mockito.when(mockBuildRepository.findOne("1")).thenReturn(new BuildStatus("1"));
+        // no errors
+        dbWriter.doWritingHereBecauseUnitTestingSucksOtherWise(mockProductRepository, "1");
+    }
 }

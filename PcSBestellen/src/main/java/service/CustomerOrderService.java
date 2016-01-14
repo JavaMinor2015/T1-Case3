@@ -7,6 +7,7 @@ import entities.rest.CustomerProduct;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -26,9 +27,11 @@ import rest.util.HateoasResponse;
 @SuppressWarnings("squid:UnusedPrivateMethod")
 public class CustomerOrderService extends RestService<CustomerOrder> {
 
+    @Setter
     @Autowired
     private CustomerOrderRepository repository;
 
+    @Setter
     @Autowired
     private ProductRepository productRepository;
 

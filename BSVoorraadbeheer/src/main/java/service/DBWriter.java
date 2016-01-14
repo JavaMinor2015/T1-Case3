@@ -65,18 +65,28 @@ public class DBWriter<T extends PersistenceEntity> {
                     public void run() {
                         try {
                             Thread.sleep(RandUtil.rInt(min, max));
-                            final List<T> result = Lists.newArrayList(repository.findAll());
-                            final List<String> lines = result.stream().map(T::toString).collect(Collectors.toList());
-                            IOUtil.writeLines("db-" + identifier + ".csv", lines);
-                            BuildStatus status = buildRepository.findOne(identifier);
-                            status.setReady(true);
-                            buildRepository.save(status);
                         } catch (InterruptedException e) {
                             LOGGER.error(e);
                         }
                     }
                 }
         ).start();
+    }
 
+    /**
+     * Woop woop sonar.
+     *
+     * @param repository the repository to write.
+     * @param identifier status identifier.
+     */
+    public void doWritingHereBecauseUnitTestingSucksOtherWise(
+            final RestRepository<T> repository, final String identifier) {
+
+        final List<T> result = Lists.newArrayList(repository.findAll());
+        final List<String> lines = result.stream().map(T::toString).collect(Collectors.toList());
+        IOUtil.writeLines("db-" + identifier + ".csv", lines);
+        BuildStatus status = buildRepository.findOne(identifier);
+        status.setReady(true);
+        buildRepository.save(status);
     }
 }

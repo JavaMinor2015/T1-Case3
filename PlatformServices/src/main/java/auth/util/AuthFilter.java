@@ -24,7 +24,8 @@ public class AuthFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException { /* unused */ }
 
     @Override
-    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
+                         final FilterChain filterChain) throws IOException, ServletException {
 
     }
 

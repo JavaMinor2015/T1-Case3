@@ -10,6 +10,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
@@ -40,6 +44,18 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return class of the instance.
      */
     public abstract Class<? extends RestService<T>> getClazz();
+
+    /**
+     * Retrieve the options for this rest service.
+     *
+     * @return a header with allowed options.
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public HttpEntity<String> options() {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("allow", "HEAD,GET,PUT,DELETE,POST,OPTIONS");
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 
     /**
      * Retrieve an entity by its id.

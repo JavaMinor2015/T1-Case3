@@ -1,5 +1,6 @@
 package service;
 
+import entities.Address;
 import entities.Customer;
 import entities.rest.CustomerOrder;
 import global.Globals;
@@ -9,6 +10,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
+import repository.AddressRepository;
 import repository.CustomerOrderRepository;
 import repository.CustomerRepository;
 import rest.service.RestService;
@@ -29,6 +31,10 @@ public class CustomerService extends RestService<Customer> {
 
     @Autowired
     @Setter
+    private AddressRepository addressRepository;
+
+    @Autowired
+    @Setter
     private CustomerRepository repository;
 
     @PostConstruct
@@ -39,9 +45,54 @@ public class CustomerService extends RestService<Customer> {
         customer.setFirstName("First");
         customer.setInitials("O.R.");
         customer.setLastName("Last");
-        customer.setAddress(null);
-        customer.setDeliveryAddress(null);
+
+
+        Address sample = new Address();
+        sample.setId("1");
+        sample.setZipcode("1234 AB");
+        sample.setStreetname("Elm");
+        sample.setNumber("5A");
+        sample.setCity("Sin");
+        addressRepository.save(sample);
+
+        customer.setAddress(sample);
+        customer.setDeliveryAddress(sample);
         repository.save(customer);
+    }
+
+    @Override
+    public HttpEntity<HateoasResponse> post(@RequestBody final Customer customer) {
+        Address existingAddress = addressRepository.findByZipcodeAndNumber(
+                customer.getAddress().getZipcode(),
+                customer.getAddress().getNumber()
+        );
+
+        if (existingAddress == null) {
+            addressRepository.save(customer.getAddress());
+        } else {
+            customer.setAddress(existingAddress);
+        }
+
+        Address existingDeliveryAddress = addressRepository.findByZipcodeAndNumber(
+                customer.getDeliveryAddress().getZipcode(),
+                customer.getDeliveryAddress().getNumber()
+        );
+
+        if (existingDeliveryAddress == null) {
+            addressRepository.save(customer.getDeliveryAddress());
+        } else {
+            customer.setDeliveryAddress(existingDeliveryAddress);
+        }
+
+        repository.save(customer);
+        return HateoasUtil.build(
+                customer,
+                HateoasUtil.makeLink(getClazz(), Globals.SELF, customer.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.NEXT, customer.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.PREV, customer.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, customer.getId()),
+                HateoasUtil.makeLink(getClazz(), Globals.DELETE, customer.getId())
+        );
     }
 
     /**

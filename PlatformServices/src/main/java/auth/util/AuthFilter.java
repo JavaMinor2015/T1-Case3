@@ -12,7 +12,8 @@ public class AuthFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AuthFilter.class.getName());
 
-    private static final String AUTH_ERROR_MSG = "Please make sure your request has an Authorization header";
+    private static final String AUTH_ERROR_MSG = "Please make sure your "
+            + "request has an Authorization header";
     private static final String EXPIRE_ERROR_MSG = "Token has expired";
     private static final String JWT_INVALID_MSG = "Invalid JWT token";
 

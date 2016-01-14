@@ -1,6 +1,5 @@
 package entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import entities.abs.PersistenceEntity;
 import java.util.List;
 import javax.persistence.Entity;
@@ -21,11 +20,9 @@ public class Customer extends PersistenceEntity {
     private String lastName;
     private String initials;
 
-    @JsonManagedReference
     @ManyToOne
     private Address address;
 
-    @JsonManagedReference
     @ManyToOne
     private Address deliveryAddress;
 

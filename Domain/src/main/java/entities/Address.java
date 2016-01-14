@@ -1,6 +1,6 @@
 package entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entities.abs.PersistenceEntity;
 import java.util.List;
 import javax.persistence.Entity;
@@ -21,11 +21,11 @@ public class Address extends PersistenceEntity {
     private String number;
     private String zipcode;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(mappedBy = "address")
     private List<Customer> customersAddress;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(mappedBy = "deliveryAddress")
     private List<Customer> customersDeliveryAddress;
 }

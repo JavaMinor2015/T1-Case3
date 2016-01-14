@@ -46,7 +46,6 @@ public class CustomerService extends RestService<Customer> {
         customer.setInitials("O.R.");
         customer.setLastName("Last");
 
-
         Address sample = new Address();
         sample.setId("1");
         sample.setZipcode("1234 AB");

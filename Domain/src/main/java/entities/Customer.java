@@ -19,10 +19,13 @@ public class Customer extends PersistenceEntity {
     private String firstName;
     private String lastName;
     private String initials;
+
     @ManyToOne
     private Address address;
+
     @ManyToOne
     private Address deliveryAddress;
+
 
     @OneToMany(mappedBy = "customer")
     private List<PurchaseOrder> orders;

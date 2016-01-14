@@ -10,7 +10,20 @@ import rest.repository.RestRepository;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, String>, RestRepository<User> {
+
+    /**
+     * Find a user by his/her email.
+     *
+     * @param email the email address.
+     * @return a user or null.
+     */
     User findByEmail(final String email);
 
+    /**
+     * Find a user by his/her display name.
+     *
+     * @param name the display name.
+     * @return a user or null.
+     */
     User getByDisplayName(final String name);
 }

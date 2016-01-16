@@ -2,7 +2,6 @@ package rest.util;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

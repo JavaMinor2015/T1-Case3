@@ -13,7 +13,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import peaseloxes.toolbox.util.IOUtil;
 import repository.BuildRepository;
 import repository.ProductRepository;
-
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 

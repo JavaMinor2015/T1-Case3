@@ -31,7 +31,7 @@ public final class AuthUtils {
      * Creates a token.
      *
      * @param remoteHost the remote host address, i.e. 127.0.0.1
-     * @param userId the user id.
+     * @param userId     the user id.
      * @return a token.
      * @throws JOSEException an exception.
      */

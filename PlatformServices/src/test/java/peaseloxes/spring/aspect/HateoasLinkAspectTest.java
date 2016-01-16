@@ -1,9 +1,5 @@
 package peaseloxes.spring.aspect;
 
-/**
- * @author peaseloxes
- */
-
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;

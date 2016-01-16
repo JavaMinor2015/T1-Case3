@@ -106,6 +106,11 @@ public class RestServiceTest {
     }
 
     @Test
+    public void testOptions() throws Exception {
+        assertThat(((ResponseEntity) service.options()).getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
     public void testSetRestRepository() throws Exception {
         // no errors, already tested heaps
         service.setRestRepository(null);

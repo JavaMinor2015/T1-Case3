@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;

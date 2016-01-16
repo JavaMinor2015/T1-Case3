@@ -152,7 +152,6 @@ public class HateoasLinkAspect {
      *
      * @param request a HttpServletRequest parameter.
      */
-
     @SuppressWarnings("squid:UnusedPrivateMethod")
     @Pointcut("args(..,request) || args(request,..)")
     private void hasRequestParam(final HttpServletRequest request) {

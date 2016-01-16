@@ -25,6 +25,6 @@ public class User extends PersistenceEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "displayName")
-    private String displayName;
+    @Column(name = "customerId")
+    private String customerId;
 }

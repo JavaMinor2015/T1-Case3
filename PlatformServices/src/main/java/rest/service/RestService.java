@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.LoginRequired;
 import peaseloxes.spring.annotations.WrapWithLink;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
@@ -49,6 +50,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      *
      * @return a header with allowed options.
      */
+    @LoginRequired(false)
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
     public HttpEntity<String> options() {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -64,6 +66,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return the corresponding entity.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @LoginRequired
     @WrapWithLink
     public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id,
                                                final HttpServletRequest request) {
@@ -78,6 +81,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return all known entities.
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
+    @LoginRequired
     @WrapWithLink
     public HttpEntity<HateoasResponse> getAll(final HttpServletRequest request) {
         final List<T> entities = Lists.newArrayList(restRepository.findAll());
@@ -93,6 +97,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return a hateoas representation of the posted object.
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
+    @LoginRequired
     @WrapWithLink
     public HttpEntity<HateoasResponse> post(@RequestBody final T t,
                                             final HttpServletRequest request) {
@@ -109,6 +114,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return a hateoas representation of the updated object.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @LoginRequired
     @WrapWithLink
     public HttpEntity<HateoasResponse> update(@PathVariable("id") final String id,
                                               @RequestBody final T t,
@@ -129,6 +135,7 @@ public abstract class RestService<T extends PersistenceEntity> {
      * @return a hateoas representation of the deleted object.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @LoginRequired
     @WrapWithLink
     public HttpEntity<HateoasResponse> delete(@PathVariable("id") final String id,
                                               final HttpServletRequest request) {

@@ -1,5 +1,6 @@
 package teamonecasethree;
 
+import auth.service.AuthService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -13,14 +14,22 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.scheduling.annotation.EnableAsync;
 import peaseloxes.spring.aspect.HateoasLinkAspect;
+import peaseloxes.spring.aspect.TokenAspect;
 
 /**
  * The application server.
  */
 @SpringBootApplication
-@ComponentScan({"service"})
+@ComponentScan({
+        "service",
+        "auth.service",
+        "peaseloxes.spring.aspect"
+})
 @EntityScan("entities")
-@EnableJpaRepositories(value = "repository")
+@EnableJpaRepositories(basePackages = {
+        "repository",
+        "auth.repository"
+})
 @EnableMongoRepositories(value = "repository")
 @EnableAsync
 @EnableAspectJAutoProxy
@@ -61,5 +70,21 @@ public class MainApplication {
     @Bean
     public HateoasLinkAspect hateoasAspect() {
         return new HateoasLinkAspect();
+    }
+
+    /**
+     * Register a TokenAspect.
+     *
+     * @return a TokenAspect instance.
+     * @see peaseloxes.spring.annotations.LoginRequired
+     */
+    @Bean
+    public TokenAspect tokenAspect() {
+        return new TokenAspect();
+    }
+
+    @Bean
+    public AuthService authService() {
+        return new AuthService();
     }
 }

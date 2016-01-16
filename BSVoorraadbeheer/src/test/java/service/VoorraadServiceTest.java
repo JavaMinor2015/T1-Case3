@@ -72,7 +72,7 @@ public class VoorraadServiceTest {
 
     @Test
     public void testGetById() throws Exception {
-        testResponseMethodNotAllowed(service.getById("woop",null));
+        testResponseMethodNotAllowed(service.getById("woop", null));
     }
 
     @Test

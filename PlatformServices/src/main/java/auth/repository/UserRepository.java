@@ -1,4 +1,4 @@
-package repository;
+package auth.repository;
 
 import entities.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;

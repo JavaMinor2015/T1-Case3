@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -24,12 +23,10 @@ import repository.CustomerOrderRepository;
 import repository.CustomerRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 
 /**
  * Created by alex on 1/13/16.
@@ -90,29 +87,27 @@ public class CustomerServiceTest {
         Customer testCustomer = new Customer();
         testCustomer.setAddress(new Address());
         testCustomer.setDeliveryAddress(new Address());
-        PowerMockito.when(HateoasUtil.build(any(Customer.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.build(any(Address.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(CustomerService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(Customer.class))).thenReturn(testEntity);
+        PowerMockito.when(HateoasUtil.build(any(Address.class))).thenReturn(testEntity);
         Mockito.when(mockAddressRepository.findByZipcodeAndNumber(any(String.class), any(String.class))).thenReturn(new Address());
         Mockito.when(mockCustomerRepository.save(any(Customer.class))).thenReturn(new Customer());
 
         // no need to test everything, mock returns a customerorder so that will do
-        assertThat(service.post(testCustomer).getBody().getContent(), instanceOf(CustomerOrder.class));
+        assertThat(service.post(testCustomer, null).getBody().getContent(), instanceOf(CustomerOrder.class));
 
         Mockito.when(mockAddressRepository.findByZipcodeAndNumber(any(String.class), any(String.class))).thenReturn(null).thenReturn(null);
 
         // no need to test everything, mock returns a customerorder so that will do
-        assertThat(service.post(testCustomer).getBody().getContent(), instanceOf(CustomerOrder.class));
+        assertThat(service.post(testCustomer, null).getBody().getContent(), instanceOf(CustomerOrder.class));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testGetByCustomer() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(CustomerOrder.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(CustomerService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(CustomerOrder.class))).thenReturn(testEntity);
         Mockito.when(mockCustomerOrderRepository.findByCustomerId("1")).thenReturn(Arrays.asList(testOrder));
-        HttpEntity<HateoasResponse> obj = service.getByCustomer("1");
+        HttpEntity<HateoasResponse> obj = service.getByCustomer("1", null);
         assertThat(obj.getBody().getContent(), instanceOf(CustomerOrder.class));
     }
 

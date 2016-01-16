@@ -7,12 +7,14 @@ import entities.rest.CustomerProduct;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.WrapWithLink;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
@@ -63,23 +65,26 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     }
 
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
+                                            final HttpServletRequest request) {
         if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        HttpEntity<HateoasResponse> response = super.post(customerOrder);
+        HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
         CustomerOrder order = repository.findOne(custOrderId);
         order.setOrderId(custOrderId);
-        // TODO stock decrease
-        return super.post(order);
+        return super.post(order, request);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
-        // TODO implement mongo update
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
+                                              @RequestBody CustomerOrder customerOrder,
+                                              final HttpServletRequest request) {
         // TODO stock decrease
-        return super.update(id, customerOrder);
+        return super.update(id, customerOrder, request);
     }
 
     private void stockDecrease(CustomerProduct customerProduct) {

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -18,7 +17,6 @@ import peaseloxes.toolbox.util.testUtil.TestService;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -65,39 +63,36 @@ public class RestServiceTest {
     @Test
     public void testGetById() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        assertThat(service.getById("1"), is(testEntity));
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
+        assertThat(service.getById("1", null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testGetAll() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.findAll()).thenReturn(Arrays.asList(testObject));
-        assertThat(service.getAll(), is(testEntity));
+        assertThat(service.getAll(null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testPost() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.save(any(TestObject.class))).thenReturn(testObject);
-        assertThat(service.post(testObject), is(testEntity));
+        assertThat(service.post(testObject, null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testUpdate() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.save(any(TestObject.class))).thenReturn(testObject);
-        assertThat(service.update("1", testObject), is(testEntity));
-        assertThat(service.update("2", testObject), is(testEntity));
+        assertThat(service.update("1", testObject, null), is(testEntity));
+        assertThat(service.update("2", testObject, null), is(testEntity));
 
     }
 
@@ -105,10 +100,9 @@ public class RestServiceTest {
     @Test
     public void testDelete() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.doNothing().when(mockRepository).delete(eq("1"));
-        assertThat(service.delete("1").getBody().getContent(), is(testEntity.getBody().getContent()));
+        assertThat(service.delete("1", null).getBody().getContent(), is(testEntity.getBody().getContent()));
     }
 
     @Test

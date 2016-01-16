@@ -3,13 +3,14 @@ package service;
 import entities.Address;
 import entities.Customer;
 import entities.rest.CustomerOrder;
-import global.Globals;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.WrapWithLink;
 import repository.AddressRepository;
 import repository.CustomerOrderRepository;
 import repository.CustomerRepository;
@@ -60,7 +61,8 @@ public class CustomerService extends RestService<Customer> {
     }
 
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody final Customer customer) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> post(@RequestBody final Customer customer, final HttpServletRequest request) {
         Address existingAddress = addressRepository.findByZipcodeAndNumber(
                 customer.getAddress().getZipcode(),
                 customer.getAddress().getNumber()
@@ -84,33 +86,21 @@ public class CustomerService extends RestService<Customer> {
         }
 
         repository.save(customer);
-        return HateoasUtil.build(
-                customer,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, customer.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, customer.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, customer.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, customer.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, customer.getId())
-        );
+        return HateoasUtil.build(customer);
     }
 
     /**
      * Retrieve all orders given a customer id.
      *
-     * @param id the customer id.
+     * @param id      the customer id.
+     * @param request the Servlet Request.
      * @return a list of orders.
      */
+    @WrapWithLink
     @RequestMapping(value = "/{id}/orders", method = RequestMethod.GET)
-    public HttpEntity<HateoasResponse> getByCustomer(@PathVariable("id") String id) {
+    public HttpEntity<HateoasResponse> getByCustomer(@PathVariable("id") String id, final HttpServletRequest request) {
         List<CustomerOrder> list = customerOrderRepository.findByCustomerId(id);
-        return HateoasUtil.build(
-                list,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
-        );
+        return HateoasUtil.build(list);
     }
 
     @Override

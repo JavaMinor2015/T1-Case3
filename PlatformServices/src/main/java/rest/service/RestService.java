@@ -2,19 +2,18 @@ package rest.service;
 
 import com.google.common.collect.Lists;
 import entities.abs.PersistenceEntity;
-import global.Globals;
-import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.WrapWithLink;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
@@ -60,115 +59,80 @@ public abstract class RestService<T extends PersistenceEntity> {
     /**
      * Retrieve an entity by its id.
      *
-     * @param id the entity's id.
+     * @param id      the entity's id.
+     * @param request the Servlet Request.
      * @return the corresponding entity.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id,
+                                               final HttpServletRequest request) {
         final T result = restRepository.findOne(id);
-        return HateoasUtil.build(
-                result,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
-        );
+        return HateoasUtil.build(result);
     }
 
     /**
      * Retrieve all entities.
      *
+     * @param request the Servlet Request.
      * @return all known entities.
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public HttpEntity<HateoasResponse> getAll() {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> getAll(final HttpServletRequest request) {
         final List<T> entities = Lists.newArrayList(restRepository.findAll());
-        final List<HateoasResponse> result = new ArrayList<>(entities.size());
-
-        // do not convert to lambda while Hateoas workaround is in place
-        for (T entity : entities) {
-            result.add(HateoasUtil.toHateoas(
-                    entity,
-                    // eww
-                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.SELF),
-                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.NEXT),
-                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.PREV),
-                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.UPDATE),
-                    new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + entity.getId(), Globals.DELETE)
-            ));
-        }
-
         return HateoasUtil.build(
-                result,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE)
-        );
+                entities);
     }
 
     /**
      * Save a new entity.
      *
-     * @param t the entity to save.
+     * @param t       the entity to save.
+     * @param request the Servlet Request.
      * @return a hateoas representation of the posted object.
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public HttpEntity<HateoasResponse> post(@RequestBody final T t) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> post(@RequestBody final T t,
+                                            final HttpServletRequest request) {
         restRepository.save(t);
-        return HateoasUtil.build(
-                t,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, t.getId())
-        );
+        return HateoasUtil.build(t);
     }
 
     /**
      * Update an entity.
      *
-     * @param id the entity's id.
-     * @param t  the new values as an entity.
+     * @param id      the entity's id.
+     * @param t       the new values as an entity.
+     * @param request the Servlet Request.
      * @return a hateoas representation of the updated object.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public HttpEntity<HateoasResponse> update(@PathVariable("id") final String id, @RequestBody final T t) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> update(@PathVariable("id") final String id,
+                                              @RequestBody final T t,
+                                              final HttpServletRequest request) {
         if (!id.equals(t.getId())) {
             // TODO freak out
-            LOGGER.error("*slap with newspaper*");
+            LOGGER.error("*spray with water*");
         }
         restRepository.save(t);
-        return HateoasUtil.build(
-                t,
-                // id = t.getId()
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, id, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, id, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id, t.getId()),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id, t.getId())
-        );
+        return HateoasUtil.build(t);
     }
 
     /**
      * Delete an entity.
      *
-     * @param id the entity's id.
+     * @param id      the entity's id.
+     * @param request the Servlet Request.
      * @return a hateoas representation of the deleted object.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public HttpEntity<HateoasResponse> delete(@PathVariable("id") final String id) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> delete(@PathVariable("id") final String id,
+                                              final HttpServletRequest request) {
         restRepository.delete(id);
-        return HateoasUtil.build(
-                id,
-                HateoasUtil.makeLink(getClazz(), Globals.SELF, id),
-                HateoasUtil.makeLink(getClazz(), Globals.NEXT, id),
-                HateoasUtil.makeLink(getClazz(), Globals.PREV, id),
-                HateoasUtil.makeLink(getClazz(), Globals.UPDATE, id),
-                HateoasUtil.makeLink(getClazz(), Globals.DELETE, id)
-        );
+        return HateoasUtil.build(id);
     }
 }

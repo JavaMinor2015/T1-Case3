@@ -88,7 +88,9 @@ public class HateoasLinkAspect {
                                                  final WrapWithLink wrapWithLink,
                                                  final HttpServletRequest request) {
         final Link[] links = processHateoasLink(wrapWithLink, request);
-        final HateoasResponse response = new HateoasResponse(original.getBody());
+        final HateoasResponse response = new HateoasResponse(((HateoasResponse) original.getBody()).getContent());
+        final List<Link> originalLinks = ((HateoasResponse) original.getBody()).getLinks();
+        response.add(originalLinks);
         response.add(links);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -111,9 +113,10 @@ public class HateoasLinkAspect {
                             request))
             );
         }
-        final HateoasResponse response = new HateoasResponse(original.getBody());
-        final Link[] links = new Link[]{};
-        response.add(linkList.toArray(links));
+        final HateoasResponse response = new HateoasResponse(((HateoasResponse) original.getBody()).getContent());
+        final List<Link> originalLinks = ((HateoasResponse) original.getBody()).getLinks();
+        response.add(originalLinks);
+        response.add(linkList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

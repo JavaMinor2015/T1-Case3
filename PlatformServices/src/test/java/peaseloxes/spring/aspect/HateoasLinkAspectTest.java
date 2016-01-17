@@ -1,5 +1,6 @@
 package peaseloxes.spring.aspect;
 
+import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
@@ -109,5 +110,23 @@ public class HateoasLinkAspectTest {
         assertThat(aspect.handleLinkAnnotation(mockJointPoint, mockWrapWithLink, mockServletRequest), instanceOf(HttpEntity.class));
         HttpEntity<HateoasResponse> response = HttpEntity.class.cast(aspect.handleLinkAnnotation(mockJointPoint, mockWrapWithLink, mockServletRequest));
         assertThat(response.getBody().getLink("self").getHref(), is("http://localhost:8080/im/a/link/to/a/method"));
+    }
+
+    @Test
+    public void testHundredPercentFTW() throws Exception {
+        final Method hasRequestParam = HateoasLinkAspect.class.getDeclaredMethod("hasRequestParam", HttpServletRequest.class);
+        assertThat(hasRequestParam.isAccessible(), is(false));
+        hasRequestParam.setAccessible(true);
+        hasRequestParam.invoke(aspect, mockServletRequest);
+
+        final Method singleAnnotation = HateoasLinkAspect.class.getDeclaredMethod("singleAnnotation", WrapWithLink.class);
+        assertThat(singleAnnotation.isAccessible(), is(false));
+        singleAnnotation.setAccessible(true);
+        singleAnnotation.invoke(aspect, mockWrapWithLink);
+
+        final Method multipleAnnotation = HateoasLinkAspect.class.getDeclaredMethod("multipleAnnotation", WrapWithLinks.class);
+        assertThat(multipleAnnotation.isAccessible(), is(false));
+        multipleAnnotation.setAccessible(true);
+        multipleAnnotation.invoke(aspect, mockWrapWithLinks);
     }
 }

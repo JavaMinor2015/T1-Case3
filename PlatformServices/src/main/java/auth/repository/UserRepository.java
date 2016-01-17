@@ -20,10 +20,10 @@ public interface UserRepository extends JpaRepository<User, String>, RestReposit
     User findByEmail(final String email);
 
     /**
-     * Find a user by his/her display name.
+     * Find a user by his/her customer id.
      *
-     * @param name the display name.
+     * @param id the id.
      * @return a user or null.
      */
-    User getByDisplayName(final String name);
+    User getByCustomerId(final String id);
 }

@@ -29,6 +29,4 @@ public class CustomerOrder extends PersistenceEntity {
 
     @ElementCollection(targetClass = CustomerProduct.class)
     private List<CustomerProduct> products = new ArrayList<>();
-
-
 }

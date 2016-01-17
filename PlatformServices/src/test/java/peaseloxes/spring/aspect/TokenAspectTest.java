@@ -1,6 +1,7 @@
 package peaseloxes.spring.aspect;
 
 import auth.service.AuthService;
+import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
@@ -68,6 +69,19 @@ public class TokenAspectTest {
         assertThat(response.getStatusCode(),
                 is(HttpStatus.FORBIDDEN));
 
+    }
+
+    @Test
+    public void testHundredPercentFTW() throws Exception {
+        final Method hasRequestParam = TokenAspect.class.getDeclaredMethod("hasRequestParam", HttpServletRequest.class);
+        assertThat(hasRequestParam.isAccessible(), is(false));
+        hasRequestParam.setAccessible(true);
+        hasRequestParam.invoke(aspect, mockServletRequest);
+
+        final Method singleAnnotation = TokenAspect.class.getDeclaredMethod("hasLogin", LoginRequired.class);
+        assertThat(singleAnnotation.isAccessible(), is(false));
+        singleAnnotation.setAccessible(true);
+        singleAnnotation.invoke(aspect, mockLoginRequired);
     }
 
 

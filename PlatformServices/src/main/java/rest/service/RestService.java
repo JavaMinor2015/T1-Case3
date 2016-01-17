@@ -2,7 +2,9 @@ package rest.service;
 
 import com.google.common.collect.Lists;
 import entities.abs.PersistenceEntity;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
@@ -85,9 +87,19 @@ public abstract class RestService<T extends PersistenceEntity> {
     @WrapWithLink
     public HttpEntity<HateoasResponse> getAll(final HttpServletRequest request) {
         final List<T> entities = Lists.newArrayList(restRepository.findAll());
-        return HateoasUtil.build(
-                entities);
+        final List<HateoasResponse> responses = new ArrayList<>(entities.size());
+        responses.addAll(entities.stream().map(entity -> HateoasUtil.toHateoas(
+                entity,
+                WrapWithLink.Type.SELF.link(request, "/" + entity.getId()),
+                WrapWithLink.Type.NEXT.link(request, "/" + next(entity.getId(), entities.size())),
+                WrapWithLink.Type.PREV.link(request, "/" + prev(entity.getId(), 1)),
+                WrapWithLink.Type.POST.link(request, ""),
+                WrapWithLink.Type.UPDATE.link(request, "/" + entity.getId()),
+                WrapWithLink.Type.DELETE.link(request, "/" + entity.getId())
+        )).collect(Collectors.toList()));
+        return HateoasUtil.build(responses);
     }
+
 
     /**
      * Save a new entity.
@@ -120,8 +132,8 @@ public abstract class RestService<T extends PersistenceEntity> {
                                               @RequestBody final T t,
                                               final HttpServletRequest request) {
         if (!id.equals(t.getId())) {
-            // TODO freak out
             LOGGER.error("*spray with water*");
+            LOGGER.error("Incorrect delete, ensure id in path and in object are identical.");
         }
         restRepository.save(t);
         return HateoasUtil.build(t);
@@ -141,5 +153,15 @@ public abstract class RestService<T extends PersistenceEntity> {
                                               final HttpServletRequest request) {
         restRepository.delete(id);
         return HateoasUtil.build(id);
+    }
+
+    private int next(final String string, final Integer number) {
+        int value = Integer.valueOf(string) + 1;
+        return Math.min(value, number);
+    }
+
+    private int prev(final String string, final Integer number) {
+        int value = Integer.valueOf(string) - 1;
+        return Math.max(Math.min(number, 1), value);
     }
 }

@@ -7,13 +7,13 @@ import java.time.ZoneId;
 import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 import peaseloxes.spring.annotations.WrapWithLink;
+import peaseloxes.spring.annotations.WrapWithLinks;
 import repository.BuildRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
@@ -53,6 +53,7 @@ public class VoorraadService extends RestService<Product> {
     }
 
     @Override
+    @WrapWithLink
     public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id,
                                                final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
@@ -87,6 +88,9 @@ public class VoorraadService extends RestService<Product> {
      * @return the acceptance of the build and a status identifier token.
      */
     @RequestMapping(value = "/request")
+    @WrapWithLinks(links = {
+            @WrapWithLink(rel = WrapWithLink.Type.SELF),
+    })
     public HttpEntity<HateoasResponse> requestBuild(final HttpServletRequest request) {
         final BuildStatus status = new BuildStatus(
                 String.valueOf(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond())
@@ -94,10 +98,10 @@ public class VoorraadService extends RestService<Product> {
         buildRepository.save(status);
         writer.write(productRepository, Product.class, status.getId());
 
-        // TODO make WrapWithLink field level as well
         HttpEntity<HateoasResponse> response = HateoasUtil.build(status.getId());
-        response.getBody().add(
-                new Link(HateoasUtil.getRootUrl(request) + "/" + status.getId(), "status")
+        response.getBody().addAll(
+                WrapWithLink.Type.STATUS.link(request, "/status/" + status.getId()),
+                WrapWithLink.Type.NEXT.link(request, "/status/" + status.getId())
         );
         return response;
     }
@@ -109,7 +113,7 @@ public class VoorraadService extends RestService<Product> {
      * @param request the Servlet Request.
      * @return true if done, false otherwise.
      */
-    @RequestMapping(value = "/request/{identifier}")
+    @RequestMapping(value = "/request/status/{identifier}")
     @WrapWithLink
     public HttpEntity<HateoasResponse> requestStatus(@PathVariable("identifier") final String id,
                                                      final HttpServletRequest request) {

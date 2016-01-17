@@ -1,5 +1,6 @@
 package rest.service;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -114,5 +115,26 @@ public class RestServiceTest {
     public void testSetRestRepository() throws Exception {
         // no errors, already tested heaps
         service.setRestRepository(null);
+    }
+
+    @Test
+    public void testPrev() throws Exception {
+        final Method method = RestService.class.getDeclaredMethod("prev", String.class, Integer.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(service, "2", 5), is(1));
+        assertThat(method.invoke(service, "1", 5), is(1));
+        assertThat(method.invoke(service, "1", 1), is(1));
+        assertThat(method.invoke(service, "1", 0), is(0));
+    }
+
+    @Test
+    public void testNext() throws Exception {
+        final Method method = RestService.class.getDeclaredMethod("next", String.class, Integer.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(service, "2", 5), is(3));
+        assertThat(method.invoke(service, "1", 2), is(2));
+        assertThat(method.invoke(service, "2", 3), is(3));
+        assertThat(method.invoke(service, "3", 3), is(3));
+        assertThat(method.invoke(service, "3", 0), is(0));
     }
 }

@@ -65,6 +65,7 @@ public class DBWriter<T extends PersistenceEntity> {
                     public void run() {
                         try {
                             Thread.sleep(RandUtil.rInt(min, max));
+                            doWritingHereBecauseUnitTestingSucksOtherWise(repository, identifier);
                         } catch (InterruptedException e) {
                             LOGGER.error(e);
                         }

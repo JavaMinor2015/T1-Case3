@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.LoginRequired;
 import peaseloxes.spring.annotations.WrapWithLink;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
@@ -31,7 +32,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Setter
     @Autowired
-    private CustomerOrderRepository repository;
+    private CustomerOrderRepository customerOrderRepository;
 
     @Setter
     @Autowired
@@ -40,7 +41,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @PostConstruct
     @Override
     public void initRepository() {
-        setRestRepository(repository);
+        setRestRepository(customerOrderRepository);
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
                 .customerId("1")
@@ -56,7 +57,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         testList.add(testProduct1);
         testList.add(testProduct2);
         testOrder.setProducts(testList);
-        repository.save(testOrder);
+        customerOrderRepository.save(testOrder);
     }
 
     @Override
@@ -66,32 +67,39 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Override
     @WrapWithLink
+    @LoginRequired
     public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
                                             final HttpServletRequest request) {
-        if (customerOrder.getId() != null) {
+        if (customerOrder.getId() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
-        String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
-        CustomerOrder order = repository.findOne(custOrderId);
+        String custOrderId = ((CustomerOrder)(response.getBody().getContent())).getId();
+        CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
         return super.post(order, request);
     }
 
     @Override
     @WrapWithLink
+    @LoginRequired
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
                                               @RequestBody CustomerOrder customerOrder,
                                               final HttpServletRequest request) {
-        // TODO stock decrease
+        if (customerOrder.getOrderStatus().equals(OrderState.PACKAGED.toString())) {
+            customerOrder.getProducts().forEach(this::stockDecrease);
+        }
         return super.update(id, customerOrder, request);
     }
 
+    /**
+     * Reduce stock for a customer product.
+     *
+     * @param customerProduct the customer product.
+     */
     private void stockDecrease(CustomerProduct customerProduct) {
-        String id = customerProduct.getId();
-        Product product = productRepository.getOne(id);
-        int newStock = product.getStock() - customerProduct.getAmount();
-        product.setStock(newStock);
+        Product product = productRepository.findOne(customerProduct.getId());
+        product.setStock(product.getStock() - customerProduct.getAmount());
         productRepository.save(product);
     }
 }

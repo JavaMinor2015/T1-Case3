@@ -4,8 +4,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
+import rest.util.HateoasUtil;
 
 /**
  * Wrap an {@linkplain HttpEntity} result type with Hateoas links.
@@ -93,7 +95,12 @@ public @interface WrapWithLink {
         /**
          * The delete relation.
          */
-        DELETE("delete");
+        DELETE("delete"),
+
+        /**
+         * A status relation.
+         */
+        STATUS("status");
 
         private final String relName;
 
@@ -124,6 +131,19 @@ public @interface WrapWithLink {
         public Link[] link(final String path) {
             return new Link[]{
                     new Link(path, relName)
+            };
+        }
+
+        /**
+         * Create a link for this type with the root application url as base.
+         *
+         * @param request the servlet request.
+         * @param path    the path to use.
+         * @return links based on the path and the relations specified in the type.
+         */
+        public Link[] link(final HttpServletRequest request, final String path) {
+            return new Link[]{
+                    new Link(HateoasUtil.getRootUrl(request) + path, relName)
             };
         }
     }

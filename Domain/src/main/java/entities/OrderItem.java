@@ -13,7 +13,11 @@ import lombok.Setter;
 @Setter
 @Entity
 public class OrderItem extends PersistenceEntity {
+
+    // TODO use this
+
     private static final long serialVersionUID = 2430048350928299321L;
+
     @ManyToOne
     private Product product;
 

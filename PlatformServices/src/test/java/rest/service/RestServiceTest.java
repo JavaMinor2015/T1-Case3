@@ -13,11 +13,13 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import peaseloxes.toolbox.util.testUtil.TestMongoRepository;
 import peaseloxes.toolbox.util.testUtil.TestObject;
 import peaseloxes.toolbox.util.testUtil.TestService;
 import rest.repository.RestRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +34,7 @@ public class RestServiceTest {
 
     private RestService<TestObject> service;
     private RestRepository<TestObject> mockRepository;
+    private TestMongoRepository mockMongoRepository;
     private TestObject testObject;
     private HttpEntity<HateoasResponse> testEntity;
     private Link testLink;
@@ -40,6 +43,7 @@ public class RestServiceTest {
     public void setUp() throws Exception {
         service = new TestService();
         mockRepository = Mockito.mock(RestRepository.class);
+        mockMongoRepository = Mockito.mock(TestMongoRepository.class);
         service.setRestRepository(mockRepository);
         testObject = new TestObject();
         testObject.setId("1");
@@ -74,6 +78,10 @@ public class RestServiceTest {
         PowerMockito.mockStatic(HateoasUtil.class);
         PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.findAll()).thenReturn(Arrays.asList(testObject));
+        assertThat(service.getAll(null), is(testEntity));
+
+        Mockito.when(mockMongoRepository.findAll()).thenReturn(Arrays.asList(testObject));
+        service.setRestRepository(mockMongoRepository);
         assertThat(service.getAll(null), is(testEntity));
     }
 

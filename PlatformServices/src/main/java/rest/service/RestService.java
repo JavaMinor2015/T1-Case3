@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,15 +89,26 @@ public abstract class RestService<T extends PersistenceEntity> {
     public HttpEntity<HateoasResponse> getAll(final HttpServletRequest request) {
         final List<T> entities = Lists.newArrayList(restRepository.findAll());
         final List<HateoasResponse> responses = new ArrayList<>(entities.size());
-        responses.addAll(entities.stream().map(entity -> HateoasUtil.toHateoas(
-                entity,
-                WrapWithLink.Type.SELF.link(request, "/" + entity.getId()),
-                WrapWithLink.Type.NEXT.link(request, "/" + next(entity.getId(), entities.size())),
-                WrapWithLink.Type.PREV.link(request, "/" + prev(entity.getId(), 1)),
-                WrapWithLink.Type.POST.link(request, ""),
-                WrapWithLink.Type.UPDATE.link(request, "/" + entity.getId()),
-                WrapWithLink.Type.DELETE.link(request, "/" + entity.getId())
-        )).collect(Collectors.toList()));
+        responses.addAll(entities.stream().map(entity -> {
+            if(restRepository instanceof MongoRepository) {
+                return HateoasUtil.toHateoas(
+                        entity,
+                        WrapWithLink.Type.SELF.link(request, "/" + entity.getId()),
+                        WrapWithLink.Type.POST.link(request, ""),
+                        WrapWithLink.Type.UPDATE.link(request, "/" + entity.getId()),
+                        WrapWithLink.Type.DELETE.link(request, "/" + entity.getId())
+                );
+            }
+            return HateoasUtil.toHateoas(
+                    entity,
+                    WrapWithLink.Type.SELF.link(request, "/" + entity.getId()),
+                    WrapWithLink.Type.NEXT.link(request, "/" + next(entity.getId(), entities.size())),
+                    WrapWithLink.Type.PREV.link(request, "/" + prev(entity.getId(), 1)),
+                    WrapWithLink.Type.POST.link(request, ""),
+                    WrapWithLink.Type.UPDATE.link(request, "/" + entity.getId()),
+                    WrapWithLink.Type.DELETE.link(request, "/" + entity.getId())
+            );
+        }).collect(Collectors.toList()));
         return HateoasUtil.build(responses);
     }
 

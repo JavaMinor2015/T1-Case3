@@ -87,7 +87,7 @@ public class AuthServiceTest {
 
         User existingUser = new User();
         existingUser.setId("1");
-        existingUser.setCustomerId(existingPassword);
+        existingUser.setCustomerId("1");
         existingUser.setEmail(existingEmail);
         existingUser.setPassword(BCrypt.hashpw(existingPassword, salt));
 
@@ -97,7 +97,7 @@ public class AuthServiceTest {
 
         assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.BAD_REQUEST));
         existingUser.setId(null);
-        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.CREATED));
+        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.OK));
     }
 
     @Test

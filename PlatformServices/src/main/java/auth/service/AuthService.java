@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthService {
 
     public static final String LOGIN_ERROR_MSG = "Wrong email and/or password";
+    public static final long LOGIN_VALIDITY_TIME = 7200000;
 
     @Autowired
     @Setter
@@ -70,7 +71,7 @@ public class AuthService {
         if (foundUser != null
                 && checkPassword(user.getPassword(), foundUser.getPassword())) {
             final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.getId());
-            token.setTimestamp(Instant.now().toEpochMilli());
+            token.setTimestamp(Instant.now().toEpochMilli() + LOGIN_VALIDITY_TIME);
             token.setCustId(foundUser.getCustomerId());
             tokenRepository.save(token);
             return Response.ok().entity(token).build();
@@ -92,12 +93,10 @@ public class AuthService {
         if (user.getId() != null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid user data").build();
         }
+        String oriPassword = user.getPassword();
         user.setPassword(hashPassword(user.getPassword()));
-        final User savedUser = userRepository.save(user);
-        final Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser.getId());
-        token.setCustId(savedUser.getCustomerId());
-        tokenRepository.save(token);
-        return Response.status(Response.Status.CREATED).entity(token).build();
+        userRepository.save(user);
+        return login(new User(user.getEmail(), oriPassword, null), request);
     }
 
     /**

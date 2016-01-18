@@ -86,6 +86,14 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
                                               @RequestBody CustomerOrder customerOrder,
                                               final HttpServletRequest request) {
+        if (customerOrder.getOrderStatus().equals(OrderState.RUNNING.toString())) {
+            for (CustomerProduct customerProduct : customerOrder.getProducts()) {
+                final Product product = productRepository.findOne(customerProduct.getId());
+                if (customerProduct.getAmount() > product.getStock()) {
+                    return new ResponseEntity<>(new HateoasResponse("Order amount exceeds avalaible stock"), HttpStatus.BAD_REQUEST);
+                }
+            }
+        }
         if (customerOrder.getOrderStatus().equals(OrderState.PACKAGED.toString())) {
             customerOrder.getProducts().forEach(this::stockDecrease);
         }

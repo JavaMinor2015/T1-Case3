@@ -3,6 +3,7 @@ package auth.service;
 import auth.repository.TokenRepository;
 import auth.repository.UserRepository;
 import auth.util.AuthUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nimbusds.jose.JOSEException;
 import entities.auth.Token;
 import entities.auth.User;
@@ -11,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import lombok.Getter;
 import lombok.Setter;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +76,7 @@ public class AuthService {
             token.setTimestamp(Instant.now().toEpochMilli() + LOGIN_VALIDITY_TIME);
             token.setCustId(foundUser.getCustomerId());
             tokenRepository.save(token);
-            return Response.status(Response.Status.CREATED).entity(token).build();
+            return Response.status(Response.Status.CREATED).entity(new TokenResponse(token.getToken())).build();
         }
         return Response.status(Response.Status.UNAUTHORIZED).entity(LOGIN_ERROR_MSG).build();
     }
@@ -121,5 +123,14 @@ public class AuthService {
 
     private boolean checkPassword(final String plaintext, final String hashed) {
         return BCrypt.checkpw(plaintext, hashed);
+    }
+
+    private class TokenResponse {
+        @Getter
+        String token;
+
+        public TokenResponse(@JsonProperty("token") String token) {
+            this.token = token;
+        }
     }
 }

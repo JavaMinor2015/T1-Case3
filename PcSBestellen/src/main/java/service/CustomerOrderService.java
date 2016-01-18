@@ -74,7 +74,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
-        String custOrderId = ((CustomerOrder)(response.getBody().getContent())).getId();
+        String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
         CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
         return super.post(order, request);

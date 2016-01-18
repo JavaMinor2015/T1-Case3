@@ -3,7 +3,6 @@ package auth.util;
 import entities.auth.Token;
 import org.junit.Test;
 import peaseloxes.toolbox.util.testUtil.TestUtil;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;

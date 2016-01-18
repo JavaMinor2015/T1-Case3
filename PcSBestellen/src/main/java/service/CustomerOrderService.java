@@ -7,12 +7,15 @@ import entities.rest.CustomerProduct;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.LoginRequired;
+import peaseloxes.spring.annotations.WrapWithLink;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
@@ -29,7 +32,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Setter
     @Autowired
-    private CustomerOrderRepository repository;
+    private CustomerOrderRepository customerOrderRepository;
 
     @Setter
     @Autowired
@@ -38,7 +41,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @PostConstruct
     @Override
     public void initRepository() {
-        setRestRepository(repository);
+        setRestRepository(customerOrderRepository);
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
                 .customerId("1")
@@ -54,7 +57,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         testList.add(testProduct1);
         testList.add(testProduct2);
         testOrder.setProducts(testList);
-        repository.save(testOrder);
+        customerOrderRepository.save(testOrder);
     }
 
     @Override
@@ -63,30 +66,40 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     }
 
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
+                                            final HttpServletRequest request) {
         if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        HttpEntity<HateoasResponse> response = super.post(customerOrder);
+        HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
-        CustomerOrder order = repository.findOne(custOrderId);
+        CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
-        // TODO stock decrease
-        return super.post(order);
+        return super.post(order, request);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
-        // TODO implement mongo update
-        // TODO stock decrease
-        return super.update(id, customerOrder);
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
+                                              @RequestBody CustomerOrder customerOrder,
+                                              final HttpServletRequest request) {
+        if (customerOrder.getOrderStatus().equals(OrderState.PACKAGED.toString())) {
+            customerOrder.getProducts().forEach(this::stockDecrease);
+        }
+        return super.update(id, customerOrder, request);
     }
 
+    /**
+     * Reduce stock for a customer product.
+     *
+     * @param customerProduct the customer product.
+     */
     private void stockDecrease(CustomerProduct customerProduct) {
-        String id = customerProduct.getId();
-        Product product = productRepository.getOne(id);
-        int newStock = product.getStock() - customerProduct.getAmount();
-        product.setStock(newStock);
+        Product product = productRepository.findOne(customerProduct.getId());
+        product.setStock(product.getStock() - customerProduct.getAmount());
         productRepository.save(product);
     }
 }

@@ -4,14 +4,16 @@ import entities.Product;
 import entity.BuildStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.WrapWithLink;
+import peaseloxes.spring.annotations.WrapWithLinks;
 import repository.BuildRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
@@ -45,56 +47,76 @@ public class VoorraadService extends RestService<Product> {
     }
 
     @Override
-    public HttpEntity<HateoasResponse> getAll() {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> getAll(final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> getById(@PathVariable("id") final String id,
+                                               final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody final Product product) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> post(@RequestBody final Product product,
+                                            final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> delete(@PathVariable("id") final String id) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> delete(@PathVariable("id") final String id,
+                                              final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> update(@PathVariable("id") final String id, @RequestBody final Product product) {
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> update(@PathVariable("id") final String id,
+                                              @RequestBody final Product product,
+                                              final HttpServletRequest request) {
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     /**
      * Request a build of the database.
      *
+     * @param request the Servlet Request.
      * @return the acceptance of the build and a status identifier token.
      */
     @RequestMapping(value = "/request")
-    public HttpEntity<HateoasResponse> requestBuild() {
+    @WrapWithLinks(links = {
+            @WrapWithLink(rel = WrapWithLink.Type.SELF),
+    })
+    public HttpEntity<HateoasResponse> requestBuild(final HttpServletRequest request) {
         final BuildStatus status = new BuildStatus(
                 String.valueOf(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond())
         );
         buildRepository.save(status);
         writer.write(productRepository, Product.class, status.getId());
-        return HateoasUtil.build(
-                status.getId(),
-                new Link(HateoasUtil.makeLink(getClazz()).getHref() + "/" + status.getId(), "status")
+
+        HttpEntity<HateoasResponse> response = HateoasUtil.build(status.getId());
+        response.getBody().addAll(
+                WrapWithLink.Type.STATUS.link(request, "/status/" + status.getId()),
+                WrapWithLink.Type.NEXT.link(request, "/status/" + status.getId())
         );
+        return response;
     }
 
     /**
      * Given a status identifier request the status of the requested build.
      *
-     * @param id the status identifier.
+     * @param id      the status identifier.
+     * @param request the Servlet Request.
      * @return true if done, false otherwise.
      */
-    @RequestMapping(value = "/request/{identifier}")
-    public HttpEntity<HateoasResponse> requestStatus(@PathVariable("identifier") final String id) {
+    @RequestMapping(value = "/request/status/{identifier}")
+    @WrapWithLink
+    public HttpEntity<HateoasResponse> requestStatus(@PathVariable("identifier") final String id,
+                                                     final HttpServletRequest request) {
         if (buildRepository.exists(id)) {
             return HateoasUtil.build(buildRepository.findOne(id).isReady());
         } else {

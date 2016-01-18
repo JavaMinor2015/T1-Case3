@@ -90,7 +90,7 @@ public abstract class RestService<T extends PersistenceEntity> {
         final List<T> entities = Lists.newArrayList(restRepository.findAll());
         final List<HateoasResponse> responses = new ArrayList<>(entities.size());
         responses.addAll(entities.stream().map(entity -> {
-            if(restRepository instanceof MongoRepository) {
+            if (restRepository instanceof MongoRepository) {
                 return HateoasUtil.toHateoas(
                         entity,
                         WrapWithLink.Type.SELF.link(request, "/" + entity.getId()),

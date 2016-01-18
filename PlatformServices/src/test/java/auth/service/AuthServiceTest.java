@@ -72,7 +72,7 @@ public class AuthServiceTest {
         Mockito.when(mockServletRequest.getRemoteHost()).thenReturn("localhost");
         Mockito.when(mockUserRepository.findByEmail(eq(existingEmail))).thenReturn(existingUser);
         assertThat(service.login(validRequest, mockServletRequest).getStatusInfo(),
-                is(Response.Status.OK));
+                is(Response.Status.CREATED));
         assertThat(service.login(invalidRequest, mockServletRequest).getStatusInfo(),
                 is(Response.Status.UNAUTHORIZED));
         assertThat(service.login(invalidRequest2, mockServletRequest).getStatusInfo(),
@@ -97,7 +97,7 @@ public class AuthServiceTest {
 
         assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.BAD_REQUEST));
         existingUser.setId(null);
-        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.OK));
+        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.CREATED));
     }
 
     @Test

@@ -74,7 +74,7 @@ public class AuthService {
             token.setTimestamp(Instant.now().toEpochMilli() + LOGIN_VALIDITY_TIME);
             token.setCustId(foundUser.getCustomerId());
             tokenRepository.save(token);
-            return Response.ok().entity(token).build();
+            return Response.status(Response.Status.CREATED).entity(token).build();
         }
         return Response.status(Response.Status.UNAUTHORIZED).entity(LOGIN_ERROR_MSG).build();
     }

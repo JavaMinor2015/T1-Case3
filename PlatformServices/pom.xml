@@ -138,12 +138,13 @@
         </dependency>
 
         <!--fancy shmancy WrapWithLinks processor to detect misuse of WrapWithLink annotation-->
-        <dependency>
-            <groupId>peaseloxes.spring.annotations</groupId>
-            <artifactId>WrapWithLinksProcessor</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--doesn't run on jenkins :(-->
+        <!--<dependency>-->
+            <!--<groupId>peaseloxes.spring.annotations</groupId>-->
+            <!--<artifactId>WrapWithLinksProcessor</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>

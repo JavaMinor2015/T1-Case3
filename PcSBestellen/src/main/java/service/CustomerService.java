@@ -80,6 +80,7 @@ public class CustomerService extends RestService<Customer> {
         );
 
         if (existingDeliveryAddress == null) {
+            // TODO address equal to delivery check?
             addressRepository.save(customer.getDeliveryAddress());
         } else {
             customer.setDeliveryAddress(existingDeliveryAddress);

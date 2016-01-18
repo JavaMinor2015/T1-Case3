@@ -70,7 +70,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @LoginRequired
     public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
                                             final HttpServletRequest request) {
-        if (customerOrder.getId() == null) {
+        if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         HttpEntity<HateoasResponse> response = super.post(customerOrder, request);

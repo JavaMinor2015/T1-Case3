@@ -57,11 +57,11 @@ public class CustomerOrderServiceTest {
         Mockito.when(mockProductRepository.findOne(any(String.class))).thenReturn(new Product());
         Mockito.when(mockProductRepository.save(any(Product.class))).thenReturn(new Product());
         CustomerOrder test = new CustomerOrder();
-        test.setId("1");
+        test.setId(null);
         Mockito.when(mockCustomerOrderRepository.save(any(CustomerOrder.class))).thenReturn(test);
         Mockito.when(mockCustomerOrderRepository.findOne(any(String.class))).thenReturn(test);
         assertThat(customerOrderService.post(test, mockRequest).getBody().getContent(), is(test));
-        test.setId(null);
+        test.setId("1");
         assertThat(((ResponseEntity) customerOrderService.post(test, mockRequest)).getStatusCode(), is(HttpStatus.BAD_REQUEST));
     }
 

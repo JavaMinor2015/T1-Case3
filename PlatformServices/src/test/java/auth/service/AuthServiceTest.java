@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mockito;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -80,7 +81,23 @@ public class AuthServiceTest {
 
     @Test
     public void testSignup() throws Exception {
+        String existingEmail = "email@company.com";
+        String existingPassword = "woop";
+        String salt = BCrypt.gensalt();
 
+        User existingUser = new User();
+        existingUser.setId("1");
+        existingUser.setCustomerId(existingPassword);
+        existingUser.setEmail(existingEmail);
+        existingUser.setPassword(BCrypt.hashpw(existingPassword, salt));
+
+        Mockito.when(mockServletRequest.getRemoteHost()).thenReturn("localhost");
+        Mockito.when(mockUserRepository.findByEmail(eq(existingEmail))).thenReturn(existingUser);
+        Mockito.when(mockUserRepository.save(eq(existingUser))).thenReturn(existingUser);
+
+        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.BAD_REQUEST));
+        existingUser.setId(null);
+        assertThat(service.signup(existingUser, mockServletRequest).getStatusInfo(), is(Response.Status.CREATED));
     }
 
     @Test

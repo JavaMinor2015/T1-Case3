@@ -78,8 +78,6 @@ public class AuthService {
         return Response.status(Response.Status.UNAUTHORIZED).entity(LOGIN_ERROR_MSG).build();
     }
 
-    // TODO replace with customer/user hybrid
-
     /**
      * Handle a new user signup.
      *
@@ -91,9 +89,14 @@ public class AuthService {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public Response signup(@RequestBody final User user, @Context final HttpServletRequest request)
             throws JOSEException {
+        if (user.getId() != null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid user data").build();
+        }
         user.setPassword(hashPassword(user.getPassword()));
         final User savedUser = userRepository.save(user);
         final Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser.getId());
+        token.setCustId(savedUser.getCustomerId());
+        tokenRepository.save(token);
         return Response.status(Response.Status.CREATED).entity(token).build();
     }
 

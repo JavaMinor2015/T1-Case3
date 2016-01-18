@@ -6,7 +6,8 @@ package entities;
 public enum OrderState {
     RUNNING("Openstaand"),
     PACKAGED("Verpakt"),
-    SHIPPED("Verscheept");
+    SHIPPED("Verscheept"),
+    CANCELLED("Geannuleerd");
 
     private String name;
 

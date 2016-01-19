@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import peaseloxes.spring.annotations.WrapWithLink;
 import repository.AddressRepository;
@@ -61,7 +63,6 @@ public class CustomerService extends RestService<Customer> {
     }
 
     @Override
-    @WrapWithLink
     public HttpEntity<HateoasResponse> post(@RequestBody final Customer customer, final HttpServletRequest request) {
         Address existingAddress = addressRepository.findByZipcodeAndNumber(
                 customer.getAddress().getZipcode(),
@@ -86,7 +87,15 @@ public class CustomerService extends RestService<Customer> {
         }
 
         repository.save(customer);
-        return HateoasUtil.build(customer);
+        HateoasResponse response = HateoasUtil.toHateoas(
+                customer,
+                WrapWithLink.Type.SELF.link(request, "/" + customer.getId()),
+                WrapWithLink.Type.POST.link(request, ""),
+                WrapWithLink.Type.UPDATE.link(request, "/" + customer.getId()),
+                WrapWithLink.Type.DELETE.link(request, "/" + customer.getId())
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
     /**

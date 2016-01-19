@@ -4,7 +4,7 @@ package entities;
  * Created by Tom on 5-1-2016.
  */
 public enum OrderState {
-    RUNNING("Openstaand"),
+    RUNNING("Open"),
     PACKAGED("Verpakt"),
     SHIPPED("Verscheept"),
     CANCELLED("Geannuleerd");

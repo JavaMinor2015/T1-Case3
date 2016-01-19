@@ -86,10 +86,34 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
                                               @RequestBody CustomerOrder customerOrder,
                                               final HttpServletRequest request) {
+        if (customerOrder.getId() == null || id == null) {
+            return new ResponseEntity<>(new HateoasResponse("Invalid input data for update."), HttpStatus.BAD_REQUEST);
+        }
+        if (!checkStock(customerOrder)) {
+            return new ResponseEntity<>(new HateoasResponse("Order amount exceeds available stock"), HttpStatus.BAD_REQUEST);
+        }
         if (customerOrder.getOrderStatus().equals(OrderState.PACKAGED.toString())) {
             customerOrder.getProducts().forEach(this::stockDecrease);
         }
         return super.update(id, customerOrder, request);
+    }
+
+    /**
+     * Check the available stock.
+     *
+     * @param customerOrder the customer order.
+     * @return true if valid order amount, false otherwise.
+     */
+    private boolean checkStock(final CustomerOrder customerOrder) {
+        if (customerOrder.getOrderStatus().equals(OrderState.RUNNING.toString())) {
+            for (CustomerProduct customerProduct : customerOrder.getProducts()) {
+                final Product product = productRepository.findOne(customerProduct.getId());
+                if (customerProduct.getAmount() > product.getStock()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

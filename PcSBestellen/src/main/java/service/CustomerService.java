@@ -5,6 +5,7 @@ import auth.repository.UserRepository;
 import entities.Address;
 import entities.Customer;
 import entities.auth.Token;
+import entities.auth.User;
 import entities.rest.CustomerOrder;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -115,7 +116,11 @@ public class CustomerService extends RestService<Customer> {
         Token t = tokenRepository.findByToken(token);
         t.setCustId(savedCustomer.getId());
         tokenRepository.save(t);
-        
+
+        User user = userRepository.findOne(t.getUserId());
+        user.setCustomerId(savedCustomer.getId());
+        userRepository.save(user);
+
         HateoasResponse response = HateoasUtil.toHateoas(
                 customer,
                 WrapWithLink.Type.SELF.link(request, "/" + customer.getId()),

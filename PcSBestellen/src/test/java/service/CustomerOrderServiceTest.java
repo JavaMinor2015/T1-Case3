@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.util.HateoasResponse;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -67,22 +68,38 @@ public class CustomerOrderServiceTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Mockito.when(mockProductRepository.findOne(any(String.class))).thenReturn(new Product());
-        Mockito.when(mockProductRepository.save(any(Product.class))).thenReturn(new Product());
+        Product p = new Product();
+        p.setStock(100);
+        Mockito.when(mockProductRepository.findOne(any(String.class))).thenReturn(p);
+        Mockito.when(mockProductRepository.save(any(Product.class))).thenReturn(p);
         CustomerOrder test = new CustomerOrder();
         test.setId("1");
         Mockito.when(mockCustomerOrderRepository.save(any(CustomerOrder.class))).thenReturn(test);
         Mockito.when(mockCustomerOrderRepository.findOne(any(String.class))).thenReturn(test);
 
+        test.setId(null);
+        HttpEntity<HateoasResponse> response = customerOrderService.update("1", test, mockRequest);
+        assertThat(((ResponseEntity)response).getStatusCode(), is(HttpStatus.BAD_REQUEST));
+
+        test.setId("1");
+        response = customerOrderService.update(null, test, mockRequest);
+        assertThat(((ResponseEntity)response).getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
         test.setId("1");
         test.setOrderStatus(OrderState.PACKAGED.toString());
-        HttpEntity<HateoasResponse> response = customerOrderService.update("1", test, mockRequest);
+        response = customerOrderService.update("1", test, mockRequest);
         assertThat(response.getBody().getContent(), is(test));
 
         test.setOrderStatus(OrderState.SHIPPED.toString());
         response = customerOrderService.update("1", test, mockRequest);
         assertThat(response.getBody().getContent(), is(test));
+
+        test.setOrderStatus(OrderState.RUNNING.toString());
+        test.getProducts().add(new CustomerProduct());
+        test.getProducts().add(new CustomerProduct());
+        test.getProducts().get(1).setAmount(Integer.MAX_VALUE);
+        response = customerOrderService.update("1", test, mockRequest);
+        assertThat(((ResponseEntity)response).getStatusCode(), is(HttpStatus.BAD_REQUEST));
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import peaseloxes.spring.aspect.HateoasLinkAspect;
 import peaseloxes.spring.aspect.TokenAspect;
 
@@ -32,6 +33,7 @@ import peaseloxes.spring.aspect.TokenAspect;
 })
 @EnableMongoRepositories(value = "repository")
 @EnableAsync
+@EnableScheduling
 @EnableAspectJAutoProxy
 public class MainApplication {
 

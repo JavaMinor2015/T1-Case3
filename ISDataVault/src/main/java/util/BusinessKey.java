@@ -1,20 +1,21 @@
 package util;
 
-import entities.abs.PersistenceEntity;
-import entities.rest.CustomerProduct;
-
 /**
  * Created by alex on 1/19/16.
  */
 public enum BusinessKey {
 
+    PRODUCT("PROD"),
+    ORDER("ORD"),
+    CUSTOMER("CUST");
 
-    PRODUCT(CustomerProduct.class, "PROD");
-    private String prod;
-    private Class<? extends PersistenceEntity> clazz;
+    private final String prod;
 
-    BusinessKey(final Class<? extends PersistenceEntity> customerProductClass, final String prod) {
+    BusinessKey(final String prod) {
         this.prod = prod;
-        this.clazz = customerProductClass;
+    }
+
+    public String key(final String id) {
+        return prod;
     }
 }

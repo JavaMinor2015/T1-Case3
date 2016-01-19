@@ -1,6 +1,8 @@
 package mock;
 
 import entities.VaultEntity;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import peaseloxes.toolbox.util.RandUtil;
 
@@ -9,6 +11,9 @@ import peaseloxes.toolbox.util.RandUtil;
  */
 @Service
 public class ESBMock {
+
+    private static final Logger LOGGER = LogManager.getLogger(ESBMock.class.getName());
+
     /**
      * Post to the ESB.
      * <p>
@@ -18,7 +23,9 @@ public class ESBMock {
      * @return true or false.
      */
     public boolean post(final VaultEntity entity) {
+        boolean response = RandUtil.rollDice(2) != 2;
+        LOGGER.info("ESB received (mocking a " + response + " response): " + entity);
         // Achievement "magic numbers avoided" unlocked.
-        return RandUtil.rollDice(2) != 2;
+        return response;
     }
 }

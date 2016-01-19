@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.DataVaultObservable;
 import peaseloxes.spring.annotations.WrapWithLink;
 import repository.AddressRepository;
 import repository.CustomerOrderRepository;
@@ -76,6 +77,7 @@ public class CustomerService extends RestService<Customer> {
         return HateoasUtil.build(repository.findOne(t.getCustId()));
     }
 
+    @DataVaultObservable
     @Override
     public HttpEntity<HateoasResponse> post(@RequestBody final Customer customer, final HttpServletRequest request) {
         Address existingAddress = addressRepository.findByZipcodeAndNumber(

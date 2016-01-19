@@ -1,5 +1,6 @@
 package util;
 
+import entities.BusinessKey;
 import entities.VaultEntity;
 import entities.abs.PersistenceEntity;
 import entities.rest.CustomerOrder;
@@ -23,7 +24,7 @@ public class EntityConverter {
         if (entity instanceof CustomerOrder) {
             VaultEntity order =  convertOrder((CustomerOrder)entity);
             for (CustomerProduct customerProduct : ((CustomerOrder) entity).getProducts()) {
-
+                order.addSub(convertProduct(customerProduct));
             }
         }
         return new VaultEntity("");

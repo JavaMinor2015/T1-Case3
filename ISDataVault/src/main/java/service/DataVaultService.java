@@ -18,6 +18,8 @@ import util.EntityConverter;
 @Service
 public class DataVaultService {
 
+    public static final int DELAY = 5000;
+
     @Autowired
     private ESBMock esb;
 
@@ -39,8 +41,7 @@ public class DataVaultService {
     /**
      * Retry all the unsuccessful posts.
      */
-    @Async
-    @Scheduled(fixedDelay = 50000)
+    @Scheduled(fixedDelay = DELAY)
     public void retry() {
         if (!blockingQueue.isEmpty()) {
             Iterator<VaultEntity> it = blockingQueue.iterator();

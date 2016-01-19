@@ -1,6 +1,7 @@
 package teamonecasethree;
 
 import auth.service.AuthService;
+import mock.ESBMock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -14,8 +15,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import peaseloxes.spring.aspect.DataVaultAspect;
 import peaseloxes.spring.aspect.HateoasLinkAspect;
 import peaseloxes.spring.aspect.TokenAspect;
+import service.DataVaultService;
 
 /**
  * The application server.
@@ -24,7 +27,7 @@ import peaseloxes.spring.aspect.TokenAspect;
 @ComponentScan({
         "service",
         "auth.service",
-        "peaseloxes.spring.aspect"
+        "peaseloxes.spring.aspect",
 })
 @EntityScan("entities")
 @EnableJpaRepositories(basePackages = {
@@ -88,5 +91,20 @@ public class MainApplication {
     @Bean
     public AuthService authService() {
         return new AuthService();
+    }
+
+    @Bean
+    public DataVaultAspect vaultAspect() {
+        return new DataVaultAspect();
+    }
+
+    @Bean
+    public DataVaultService vaultService() {
+        return new DataVaultService();
+    }
+
+    @Bean
+    public ESBMock esbMock() {
+        return new ESBMock();
     }
 }

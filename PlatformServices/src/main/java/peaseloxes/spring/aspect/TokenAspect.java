@@ -32,30 +32,30 @@ public class TokenAspect {
      *
      * @param jointPoint    the original joint point.
      * @param loginRequired the LoginRequired annotation.
-     * @param request       the servlet request.
      * @return the original response if token valid, Forbidden otherwise.
      * @throws Throwable catch!
      */
     @SuppressWarnings("squid:S00112")
-    @Around("hasLogin(loginRequired) && hasRequestParam(request)")
+    @Around("hasLogin(loginRequired)")
     public Object handleLinkAnnotation(final ProceedingJoinPoint jointPoint,
-                                       final LoginRequired loginRequired,
-                                       final HttpServletRequest request) throws Throwable {
-        // if login is not required we can skip right ahead
-        if (!loginRequired.value()) {
-            return jointPoint.proceed();
-        }
-        // we should be in a method with a request parameter
-        if (authService.isAuthorized(request.getHeader("Authorization"))) {
-            return jointPoint.proceed();
+                                       final LoginRequired loginRequired) throws Throwable {
+        for (Object o : jointPoint.getArgs()) {
+            if (HttpServletRequest.class.isAssignableFrom(o.getClass())) {
+                HttpServletRequest request = (HttpServletRequest) o;
+                // if login is not required we can skip right ahead
+                if (!loginRequired.value()) {
+                    return jointPoint.proceed();
+                }
+                // we should be in a method with a request parameter
+                if (authService.isAuthorized(request.getHeader("Authorization"))) {
+                    return jointPoint.proceed();
+                }
+                // tell the user the bad news
+                return new ResponseEntity<>(new HateoasResponse("You are not logged in or your token has expired."), HttpStatus.FORBIDDEN);
+            }
         }
         // tell the user the bad news
-        return new ResponseEntity<>(new HateoasResponse("You are not logged in or your token has expired."), HttpStatus.FORBIDDEN);
-    }
-
-    @SuppressWarnings("squid:UnusedPrivateMethod")
-    @Pointcut("args(..,request) || args(request,..)")
-    private void hasRequestParam(final HttpServletRequest request) {
+        return new ResponseEntity<>(new HateoasResponse("No header found, access denied!"), HttpStatus.FORBIDDEN);
     }
 
     @SuppressWarnings("squid:UnusedPrivateMethod")

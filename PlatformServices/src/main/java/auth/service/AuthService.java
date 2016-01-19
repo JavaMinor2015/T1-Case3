@@ -100,8 +100,7 @@ public class AuthService {
         String oriPassword = user.getPassword();
         user.setPassword(hashPassword(user.getPassword()));
         User savedUser = userRepository.save(user);
-        savedUser.setPassword(oriPassword);
-        return login(savedUser, request);
+        return login(new User(user.getEmail(), oriPassword, savedUser.getCustomerId()), request);
     }
 
     /**

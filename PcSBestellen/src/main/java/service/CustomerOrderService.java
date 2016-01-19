@@ -4,6 +4,7 @@ import entities.OrderState;
 import entities.Product;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -77,6 +78,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
         CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
+        order.setTimestamp(Instant.now().toEpochMilli());
         return super.post(order, request);
     }
 

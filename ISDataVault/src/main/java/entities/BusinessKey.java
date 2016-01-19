@@ -7,7 +7,8 @@ public enum BusinessKey {
 
     PRODUCT("PROD"),
     ORDER("ORD"),
-    CUSTOMER("CUST");
+    CUSTOMER("CUST"),
+    ADDRESS("ADDR");
 
     private final String prod;
 
@@ -18,10 +19,10 @@ public enum BusinessKey {
     /**
      * Generate a key.
      *
-     * @param id the entity id.
+     * @param hash the entity hash.
      * @return a key. Warning: won't open doors.
      */
-    public String key(final String id) {
-        return prod;
+    public String key(final String hash) {
+        return prod + "_" + hash;
     }
 }

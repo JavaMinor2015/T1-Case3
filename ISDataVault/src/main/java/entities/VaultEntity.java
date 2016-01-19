@@ -2,11 +2,13 @@ package entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Created by alex on 1/19/16.
  */
 public class VaultEntity {
+    @Getter
     private final String businessKey;
     private List<VaultEntity> containedKeys = new ArrayList<>();
 

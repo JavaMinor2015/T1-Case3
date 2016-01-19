@@ -78,6 +78,7 @@ public class CustomerService extends RestService<Customer> {
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     @WrapWithLink
+    @LoginRequired
     public HttpEntity<HateoasResponse> getCustomer(final HttpServletRequest request) {
         String token = request.getHeader("Authorization").replace("Bearer ", "");
         Token t = tokenRepository.findByToken(token);

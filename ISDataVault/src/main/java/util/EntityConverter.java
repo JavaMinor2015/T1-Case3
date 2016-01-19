@@ -1,10 +1,13 @@
 package util;
 
+import entities.Address;
 import entities.BusinessKey;
+import entities.Customer;
 import entities.VaultEntity;
 import entities.abs.PersistenceEntity;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Created by alex on 1/19/16.
@@ -19,22 +22,77 @@ public class EntityConverter {
      */
     public static VaultEntity convert(final PersistenceEntity entity) {
         if (entity instanceof CustomerProduct) {
-            return convertProduct((CustomerProduct) entity);
+            VaultEntity product = convertProduct((CustomerProduct) entity);
+            entity.setBusinessKey(product.getBusinessKey());
+            return product;
         }
         if (entity instanceof CustomerOrder) {
-            VaultEntity order =  convertOrder((CustomerOrder)entity);
+            VaultEntity order = convertOrder((CustomerOrder) entity);
             for (CustomerProduct customerProduct : ((CustomerOrder) entity).getProducts()) {
-                order.addSub(convertProduct(customerProduct));
+                VaultEntity product = convertProduct(customerProduct);
+                customerProduct.setBusinessKey(product.getBusinessKey());
+                order.addSub(product);
             }
+            entity.setBusinessKey(order.getBusinessKey());
+            return order;
+        }
+        if (entity instanceof Customer) {
+            VaultEntity customer = convertCustomer((Customer) entity);
+            customer.addSub(convertAddress(((Customer) entity).getAddress()));
+            customer.addSub(convertAddress(((Customer) entity).getDeliveryAddress()));
+            // TODO address business keys
+            entity.setBusinessKey(customer.getBusinessKey());
+            return customer;
         }
         return new VaultEntity("");
     }
 
+    private static VaultEntity convertAddress(final Address address) {
+        return new VaultEntity(BusinessKey.ADDRESS.key(DigestUtils.sha1Hex(combineAddress(address))));
+    }
+
+    private static VaultEntity convertCustomer(final Customer customer) {
+        String hash = String.valueOf(customer.getClass())
+                + customer.getFirstName()
+                + customer.getInitials()
+                + customer.getLastName()
+                + combineAddress(customer.getAddress())
+                + combineAddress(customer.getDeliveryAddress());
+        return new VaultEntity(BusinessKey.CUSTOMER.key(DigestUtils.sha1Hex(hash)));
+    }
+
     private static VaultEntity convertProduct(final CustomerProduct product) {
-        return new VaultEntity(BusinessKey.PRODUCT.key(product.getId()));
+        String hash = combineProduct(product);
+        return new VaultEntity(BusinessKey.PRODUCT.key(DigestUtils.sha1Hex(hash)));
     }
 
     private static VaultEntity convertOrder(final CustomerOrder customerOrder) {
-        return new VaultEntity(BusinessKey.ORDER.key(customerOrder.getOrderId()));
+        String hash = String.valueOf(customerOrder.getClass())
+                + customerOrder.getTimestamp()
+                + customerOrder.getOrderStatus()
+                + customerOrder.getCustomerId()
+                + customerOrder.getTotalPrice();
+        for (CustomerProduct product : customerOrder.getProducts()) {
+            hash += combineProduct(product);
+        }
+        return new VaultEntity(BusinessKey.ORDER.key(DigestUtils.sha1Hex(hash)));
+    }
+
+    private static String combineAddress(final Address address) {
+        return address.getClass()
+                + address.getCity()
+                + address.getNumber()
+                + address.getStreetname()
+                + address.getZipcode();
+    }
+
+    private static String combineProduct(CustomerProduct product) {
+        return String.valueOf(product.getClass())
+                // products should have id's already, include them
+                + product.getId()
+                + product.getVersion()
+                + product.getName()
+                + product.getAmount()
+                + product.getPrice();
     }
 }

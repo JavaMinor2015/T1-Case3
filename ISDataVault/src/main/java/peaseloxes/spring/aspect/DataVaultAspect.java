@@ -1,6 +1,8 @@
 package peaseloxes.spring.aspect;
 
 import entities.abs.PersistenceEntity;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Setter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -22,11 +24,13 @@ public class DataVaultAspect {
     @Around("@annotation(observable)")
     public Object handleVaultAnnotation(final ProceedingJoinPoint jointPoint,
                                         final DataVaultObservable observable) throws Throwable {
+        final List<Object> processedArgs = new ArrayList<>();
         for (Object o : jointPoint.getArgs()) {
+            processedArgs.add(o);
             if (PersistenceEntity.class.isAssignableFrom(o.getClass())) {
                 vaultService.postToVault((PersistenceEntity) o);
             }
         }
-        return jointPoint.proceed();
+        return jointPoint.proceed(processedArgs.toArray());
     }
 }

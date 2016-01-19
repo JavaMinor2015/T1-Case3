@@ -106,7 +106,11 @@ public class AuthService {
      * @return true if valid, false otherwise.
      */
     public boolean isAuthorized(final String tokenString) {
-        Token token = tokenRepository.findByToken(tokenString.replace("Bearer ", ""));
+        if (tokenString == null) {
+            return false;
+        }
+        String t = tokenString.replace("Bearer ", "");
+        Token token = tokenRepository.findByToken(t);
         if (token == null) {
             return false;
         } else if (token.getTimestamp() < Instant.now().toEpochMilli()) {

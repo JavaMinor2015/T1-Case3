@@ -116,5 +116,8 @@ public class AuthServiceTest {
 
         Mockito.when(mockTokenRepository.findByToken(eq("1"))).thenReturn(invalidToken);
         assertThat(service.isAuthorized(invalidToken.getToken()), is(false));
+
+        Mockito.when(mockTokenRepository.findByToken(eq("1"))).thenReturn(null);
+        assertThat(service.isAuthorized(validToken.getToken()), is(false));
     }
 }

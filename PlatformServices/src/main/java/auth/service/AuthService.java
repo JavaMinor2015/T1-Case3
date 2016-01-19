@@ -46,8 +46,10 @@ public class AuthService {
      */
     @PostConstruct
     public void init() {
+        User user = new User("e@mail.com", hashPassword("woop"), "1234");
+        user.setCustomerId("1");
         userRepository.save(
-                new User("e@mail.com", hashPassword("woop"), "1234")
+                user
         );
         Token token = new Token("godmode=true");
         token.setTimestamp(Long.MAX_VALUE);

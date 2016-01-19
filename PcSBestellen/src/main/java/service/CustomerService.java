@@ -1,6 +1,7 @@
 package service;
 
 import auth.repository.TokenRepository;
+import auth.repository.UserRepository;
 import entities.Address;
 import entities.Customer;
 import entities.auth.Token;
@@ -47,6 +48,10 @@ public class CustomerService extends RestService<Customer> {
     @Autowired
     @Setter
     private TokenRepository tokenRepository;
+
+    @Autowired
+    @Setter
+    private UserRepository userRepository;
 
     @PostConstruct
     @Override
@@ -105,7 +110,12 @@ public class CustomerService extends RestService<Customer> {
             customer.setDeliveryAddress(existingDeliveryAddress);
         }
 
-        repository.save(customer);
+        Customer savedCustomer = repository.save(customer);
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        t.setCustId(savedCustomer.getId());
+        tokenRepository.save(t);
+        
         HateoasResponse response = HateoasUtil.toHateoas(
                 customer,
                 WrapWithLink.Type.SELF.link(request, "/" + customer.getId()),

@@ -46,11 +46,9 @@ public class HateoasLinkAspect {
                                        final WrapWithLink wrapWithLink) throws Throwable {
         final Object response = jointPoint.proceed();
         for (Object o : jointPoint.getArgs()) {
-            if (HttpServletRequest.class.isAssignableFrom(o.getClass())) {
-                HttpServletRequest request = (HttpServletRequest) o;
-                if (HttpEntity.class.isAssignableFrom(response.getClass())) {
-                    return addLinks((HttpEntity) response, wrapWithLink, request);
-                }
+            Object request = processObject(wrapWithLink, response, o);
+            if (request != null) {
+                return request;
             }
         }
         // nothing we can do but return the original and hope for the best
@@ -71,16 +69,35 @@ public class HateoasLinkAspect {
                                         final WrapWithLinks wrapWithLinks) throws Throwable {
         final Object response = jointPoint.proceed();
         for (Object o : jointPoint.getArgs()) {
-            if (HttpServletRequest.class.isAssignableFrom(o.getClass())) {
-                HttpServletRequest request = (HttpServletRequest) o;
-                if (HttpEntity.class.isAssignableFrom(response.getClass())) {
-                    return addLinks((HttpEntity) response, wrapWithLinks, request);
-                }
+            Object request = processObject(wrapWithLinks, response, o);
+            if (request != null) {
+                return request;
             }
         }
         // nothing we can do but return the original and hope for the best
         return response;
     }
+
+    private Object processObject(final WrapWithLink wrapWithLink, final Object response, final Object o) {
+        if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(o, HttpServletRequest.class)) {
+            HttpServletRequest request = (HttpServletRequest) o;
+            if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(response, HttpEntity.class)) {
+                return addLinks((HttpEntity) response, wrapWithLink, request);
+            }
+        }
+        return null;
+    }
+
+    private Object processObject(final WrapWithLinks wrapWithLinks, final Object response, final Object o) {
+        if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(o, HttpServletRequest.class)) {
+            HttpServletRequest request = (HttpServletRequest) o;
+            if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(response, HttpEntity.class)) {
+                return addLinks((HttpEntity) response, wrapWithLinks, request);
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds links to an HttpEntity instance.

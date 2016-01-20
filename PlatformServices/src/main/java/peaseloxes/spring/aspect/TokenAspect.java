@@ -40,7 +40,7 @@ public class TokenAspect {
     public Object handleLinkAnnotation(final ProceedingJoinPoint jointPoint,
                                        final LoginRequired loginRequired) throws Throwable {
         for (Object o : jointPoint.getArgs()) {
-            if (HttpServletRequest.class.isAssignableFrom(o.getClass())) {
+            if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(o, HttpServletRequest.class)) {
                 HttpServletRequest request = (HttpServletRequest) o;
                 // if login is not required we can skip right ahead
                 if (!loginRequired.value()) {

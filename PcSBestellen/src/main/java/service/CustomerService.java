@@ -123,11 +123,11 @@ public class CustomerService extends RestService<Customer> {
         userRepository.save(user);
 
         HateoasResponse response = HateoasUtil.toHateoas(
-                customer,
-                WrapWithLink.Type.SELF.link(request, "/" + customer.getId()),
+                savedCustomer,
+                WrapWithLink.Type.SELF.link(request, "/" + savedCustomer.getId()),
                 WrapWithLink.Type.POST.link(request, ""),
-                WrapWithLink.Type.UPDATE.link(request, "/" + customer.getId()),
-                WrapWithLink.Type.DELETE.link(request, "/" + customer.getId())
+                WrapWithLink.Type.UPDATE.link(request, "/" + savedCustomer.getId()),
+                WrapWithLink.Type.DELETE.link(request, "/" + savedCustomer.getId())
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
 

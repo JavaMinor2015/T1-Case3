@@ -97,13 +97,3 @@ __Documentatie__
 
 * Elke publieke methode documentatie geven voor de feature af is.
 * Vage constructies inline documenteren (lambda)
-
-## Links
-
-* [JIRA](http://10.32.43.248:8085/jira/browse/TEAMONE/?selectedTab=com.atlassian.jira.jira-projects-plugin:summary-panel)
-* [Sonar](http://10.32.43.248:9000/sonar/)
-* [Jenkins](http://10.32.43.249/jenkins/view/Team%201/)
-* [Stash](http://10.32.43.248:7990/stash/projects)
-* [Spring Backend](https://github.com/JavaMinor2015/T1-Case3)
-* [Angular Frontend](https://github.com/JavaMinor2015/T1-Case3-Angular)
-* [Android Frontend](https://github.com/JavaMinor2015/T1-Case3-Android) 

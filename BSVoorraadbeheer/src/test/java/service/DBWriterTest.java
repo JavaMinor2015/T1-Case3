@@ -13,7 +13,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import peaseloxes.toolbox.util.IOUtil;
 import repository.BuildRepository;
 import repository.ProductRepository;
-
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 
@@ -39,9 +38,10 @@ public class DBWriterTest {
         dbWriter.setBuildRepository(mockBuildRepository);
     }
 
-    @PrepareForTest(IOUtil.class)
+    @PrepareForTest({
+            IOUtil.class
+    })
     @Test
-//    @Ignore(value = "Static not being mocked properly, multi thread confusing for coverage analyser, log4j mocking issues")
     public void testWrite() throws Exception {
         // actual file writing is done by IOUtil
         PowerMockito.mockStatic(IOUtil.class);
@@ -56,6 +56,8 @@ public class DBWriterTest {
         } catch (IllegalArgumentException e) {
             // success
         }
+        Mockito.when(mockProductRepository.findAll()).thenThrow(InterruptedException.class);
+        dbWriter.write(mockProductRepository, Product.class, "1");
     }
 
     @PrepareForTest(IOUtil.class)

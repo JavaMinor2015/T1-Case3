@@ -1,10 +1,10 @@
 package rest.service;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -13,6 +13,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import peaseloxes.toolbox.util.testUtil.TestMongoRepository;
 import peaseloxes.toolbox.util.testUtil.TestObject;
 import peaseloxes.toolbox.util.testUtil.TestService;
 import rest.repository.RestRepository;
@@ -33,6 +34,7 @@ public class RestServiceTest {
 
     private RestService<TestObject> service;
     private RestRepository<TestObject> mockRepository;
+    private TestMongoRepository mockMongoRepository;
     private TestObject testObject;
     private HttpEntity<HateoasResponse> testEntity;
     private Link testLink;
@@ -41,6 +43,7 @@ public class RestServiceTest {
     public void setUp() throws Exception {
         service = new TestService();
         mockRepository = Mockito.mock(RestRepository.class);
+        mockMongoRepository = Mockito.mock(TestMongoRepository.class);
         service.setRestRepository(mockRepository);
         testObject = new TestObject();
         testObject.setId("1");
@@ -65,39 +68,40 @@ public class RestServiceTest {
     @Test
     public void testGetById() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        assertThat(service.getById("1"), is(testEntity));
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
+        assertThat(service.getById("1", null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testGetAll() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.findAll()).thenReturn(Arrays.asList(testObject));
-        assertThat(service.getAll(), is(testEntity));
+        assertThat(service.getAll(null), is(testEntity));
+
+        Mockito.when(mockMongoRepository.findAll()).thenReturn(Arrays.asList(testObject));
+        service.setRestRepository(mockMongoRepository);
+        assertThat(service.getAll(null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testPost() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.save(any(TestObject.class))).thenReturn(testObject);
-        assertThat(service.post(testObject), is(testEntity));
+        assertThat(service.post(testObject, null), is(testEntity));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testUpdate() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.when(mockRepository.save(any(TestObject.class))).thenReturn(testObject);
-        assertThat(service.update("1", testObject), is(testEntity));
-        assertThat(service.update("2", testObject), is(testEntity));
+        assertThat(service.update("1", testObject, null), is(testEntity));
+        assertThat(service.update("2", testObject, null), is(testEntity));
 
     }
 
@@ -105,15 +109,40 @@ public class RestServiceTest {
     @Test
     public void testDelete() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(TestObject.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(TestService.class))).thenReturn(testLink);
+        PowerMockito.when(HateoasUtil.build(any(TestObject.class))).thenReturn(testEntity);
         Mockito.doNothing().when(mockRepository).delete(eq("1"));
-        assertThat(service.delete("1").getBody().getContent(), is(testEntity.getBody().getContent()));
+        assertThat(service.delete("1", null).getBody().getContent(), is(testEntity.getBody().getContent()));
+    }
+
+    @Test
+    public void testOptions() throws Exception {
+        assertThat(((ResponseEntity) service.options()).getStatusCode(), is(HttpStatus.OK));
     }
 
     @Test
     public void testSetRestRepository() throws Exception {
         // no errors, already tested heaps
         service.setRestRepository(null);
+    }
+
+    @Test
+    public void testPrev() throws Exception {
+        final Method method = RestService.class.getDeclaredMethod("prev", String.class, Integer.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(service, "2", 5), is(1));
+        assertThat(method.invoke(service, "1", 5), is(1));
+        assertThat(method.invoke(service, "1", 1), is(1));
+        assertThat(method.invoke(service, "1", 0), is(0));
+    }
+
+    @Test
+    public void testNext() throws Exception {
+        final Method method = RestService.class.getDeclaredMethod("next", String.class, Integer.class);
+        method.setAccessible(true);
+        assertThat(method.invoke(service, "2", 5), is(3));
+        assertThat(method.invoke(service, "1", 2), is(2));
+        assertThat(method.invoke(service, "2", 3), is(3));
+        assertThat(method.invoke(service, "3", 3), is(3));
+        assertThat(method.invoke(service, "3", 0), is(0));
     }
 }

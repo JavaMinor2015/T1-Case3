@@ -1,5 +1,6 @@
 package entities.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import entities.abs.PersistenceEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,9 @@ public class CustomerOrder extends PersistenceEntity {
     private String deliveryStatus;
     private double totalPrice;
 
+    @JsonIgnore
+    private long timestamp;
+
     @ElementCollection(targetClass = CustomerProduct.class)
     private List<CustomerProduct> products = new ArrayList<>();
-
-
 }

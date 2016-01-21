@@ -16,6 +16,8 @@ import lombok.Setter;
 @Entity
 public class PurchaseOrder extends PersistenceEntity {
 
+    // TODO use this
+
     private static final long serialVersionUID = 5720989074397364426L;
     private OrderState orderState;
 

@@ -1,5 +1,6 @@
 package entities.abs;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -24,4 +25,7 @@ public abstract class PersistenceEntity implements Serializable {
 
     @Version
     private int version;
+
+    @JsonIgnore
+    private String businessKey;
 }

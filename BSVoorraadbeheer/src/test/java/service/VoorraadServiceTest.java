@@ -6,12 +6,10 @@ import entity.BuildStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import repository.BuildRepository;
 import repository.ProductRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -70,37 +67,36 @@ public class VoorraadServiceTest {
 
     @Test
     public void testGetAll() throws Exception {
-        testResponseMethodNotAllowed(service.getAll());
+        testResponseMethodNotAllowed(service.getAll(null));
     }
 
     @Test
     public void testGetById() throws Exception {
-        testResponseMethodNotAllowed(service.getById("woop"));
+        testResponseMethodNotAllowed(service.getById("woop", null));
     }
 
     @Test
     public void testPost() throws Exception {
-        testResponseMethodNotAllowed(service.post(null));
+        testResponseMethodNotAllowed(service.post(null, null));
     }
 
     @Test
     public void testDelete() throws Exception {
-        testResponseMethodNotAllowed(service.delete("di"));
+        testResponseMethodNotAllowed(service.delete("di", null));
     }
 
     @Test
     public void testUpdate() throws Exception {
-        testResponseMethodNotAllowed(service.update("doop", null));
+        testResponseMethodNotAllowed(service.update("doop", null, null));
     }
 
     @PrepareForTest(HateoasUtil.class)
     @Test
     public void testRequestBuild() throws Exception {
         PowerMockito.mockStatic(HateoasUtil.class);
-        PowerMockito.when(HateoasUtil.build(any(CustomerOrder.class), Matchers.<Link>anyVararg())).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.makeLink(eq(VoorraadService.class))).thenReturn(new Link("Foo", "Bar"));
+        PowerMockito.when(HateoasUtil.build(any(CustomerOrder.class))).thenReturn(testEntity);
         Mockito.doNothing().when(mockDBWriter).write(eq(mockProductRepository), eq(Product.class), eq(mockIdentifier));
-        assertThat(service.requestBuild().getBody().getContent(), is(mockIdentifier));
+        assertThat(service.requestBuild(null).getBody().getContent(), is(mockIdentifier));
     }
 
     @PrepareForTest(HateoasUtil.class)
@@ -113,17 +109,17 @@ public class VoorraadServiceTest {
                 new ResponseEntity<>(new HateoasResponse(false), HttpStatus.OK)
         );
         Mockito.when(mockBuildRepository.findOne(mockIdentifier)).thenReturn(statusBusy);
-        assertThat(service.requestStatus(mockIdentifier).getBody().getContent(), is(false));
+        assertThat(service.requestStatus(mockIdentifier, null).getBody().getContent(), is(false));
 
         PowerMockito.when(HateoasUtil.build(any(CustomerOrder.class))).thenReturn(
                 new ResponseEntity<>(new HateoasResponse(true), HttpStatus.OK)
         );
         Mockito.when(mockBuildRepository.findOne(mockIdentifier)).thenReturn(statusBusy);
-        assertThat(service.requestStatus(mockIdentifier).getBody().getContent(), is(true));
+        assertThat(service.requestStatus(mockIdentifier, null).getBody().getContent(), is(true));
 
 
         Mockito.when(mockBuildRepository.exists(mockIdentifier)).thenReturn(false);
-        assertThat(service.requestStatus(mockIdentifier).hasBody(), is(false));
+        assertThat(service.requestStatus(mockIdentifier, null).hasBody(), is(false));
     }
 
     @Test

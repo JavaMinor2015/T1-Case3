@@ -1,0 +1,18 @@
+{
+  "firstName" : "first",
+  "lastName" : "last",
+  "initials" : "or",
+  "address" : {
+    "city" : "townsville",
+    "streetName" :"main street",
+    "number":"10",
+    "zipcode":"987456163548979163165498416"
+  },
+  "deliveryAddress" : {
+    "city" : "townsville",
+    "streetName" :"main street",
+    "number":"10",
+    "zipcode":"987456163548979163165498416"
+  },
+  "orders" : []
+}

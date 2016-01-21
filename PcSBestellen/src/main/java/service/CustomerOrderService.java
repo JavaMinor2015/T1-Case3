@@ -1,22 +1,30 @@
 package service;
 
+import auth.repository.TokenRepository;
 import entities.OrderState;
 import entities.Product;
+import entities.auth.Token;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.DataVaultObservable;
+import peaseloxes.spring.annotations.LoginRequired;
+import peaseloxes.spring.annotations.WrapWithLink;
 import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
 
 /**
  * @author peaseloxes
@@ -29,16 +37,20 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Setter
     @Autowired
-    private CustomerOrderRepository repository;
+    private CustomerOrderRepository customerOrderRepository;
 
     @Setter
     @Autowired
     private ProductRepository productRepository;
 
+    @Setter
+    @Autowired
+    private TokenRepository tokenRepository;
+
     @PostConstruct
     @Override
     public void initRepository() {
-        setRestRepository(repository);
+        setRestRepository(customerOrderRepository);
         CustomerOrder testOrder = CustomerOrder.builder()
                 .orderId("1")
                 .customerId("1")
@@ -54,7 +66,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         testList.add(testProduct1);
         testList.add(testProduct2);
         testOrder.setProducts(testList);
-        repository.save(testOrder);
+        customerOrderRepository.save(testOrder);
     }
 
     @Override
@@ -62,31 +74,85 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         return this.getClass();
     }
 
+    /**
+     * Retrieve a customer's orders.
+     *
+     * @param request the http request.
+     * @return a customers orders.
+     */
+    @RequestMapping(value = "/myorders", method = RequestMethod.GET)
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> getMyOrders(final HttpServletRequest request) {
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        return HateoasUtil.build(customerOrderRepository.findByCustomerId(t.getCustId()));
+    }
+
     @Override
-    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder) {
+    @WrapWithLink
+    @DataVaultObservable
+    @LoginRequired
+    public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
+                                            final HttpServletRequest request) {
         if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        HttpEntity<HateoasResponse> response = super.post(customerOrder);
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        customerOrder.setCustomerId(t.getCustId());
+        HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
-        CustomerOrder order = repository.findOne(custOrderId);
+        CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
-        // TODO stock decrease
-        return super.post(order);
+        order.setTimestamp(Instant.now().toEpochMilli());
+        return super.post(order, request);
     }
 
     @Override
-    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id, @RequestBody CustomerOrder customerOrder) {
-        // TODO implement mongo update
-        // TODO stock decrease
-        return super.update(id, customerOrder);
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> update(@PathVariable("id") String id,
+                                              @RequestBody CustomerOrder customerOrder,
+                                              final HttpServletRequest request) {
+        if (customerOrder.getId() == null || id == null) {
+            return new ResponseEntity<>(new HateoasResponse("Invalid input data for update."), HttpStatus.BAD_REQUEST);
+        }
+        if (!checkStock(customerOrder)) {
+            return new ResponseEntity<>(new HateoasResponse("Order amount exceeds available stock"), HttpStatus.BAD_REQUEST);
+        }
+        if (customerOrder.getOrderStatus().equals(OrderState.PACKAGED.toString())) {
+            customerOrder.getProducts().forEach(this::stockDecrease);
+        }
+        return super.update(id, customerOrder, request);
     }
 
+    /**
+     * Check the available stock.
+     *
+     * @param customerOrder the customer order.
+     * @return true if valid order amount, false otherwise.
+     */
+    private boolean checkStock(final CustomerOrder customerOrder) {
+        if (customerOrder.getOrderStatus().equals(OrderState.RUNNING.toString())) {
+            for (CustomerProduct customerProduct : customerOrder.getProducts()) {
+                final Product product = productRepository.findOne(customerProduct.getId());
+                if (customerProduct.getAmount() > product.getStock()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Reduce stock for a customer product.
+     *
+     * @param customerProduct the customer product.
+     */
     private void stockDecrease(CustomerProduct customerProduct) {
-        String id = customerProduct.getId();
-        Product product = productRepository.getOne(id);
-        int newStock = product.getStock() - customerProduct.getAmount();
-        product.setStock(newStock);
+        Product product = productRepository.findOne(customerProduct.getId());
+        product.setStock(product.getStock() - customerProduct.getAmount());
         productRepository.save(product);
     }
 }

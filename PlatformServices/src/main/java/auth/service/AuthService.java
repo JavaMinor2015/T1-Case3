@@ -1,9 +1,12 @@
-package service;
+package auth.service;
 
+import auth.repository.TokenRepository;
+import auth.repository.UserRepository;
 import auth.util.AuthUtils;
 import com.nimbusds.jose.JOSEException;
 import entities.auth.Token;
 import entities.auth.User;
+import java.time.Instant;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -11,8 +14,8 @@ import javax.ws.rs.core.Response;
 import lombok.Setter;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import repository.UserRepository;
 
 /**
  * Implementation for Satellizer Angular Token based framework.
@@ -21,35 +24,37 @@ import repository.UserRepository;
  * <p>
  * Created by alex on 1/13/16.
  */
+@Service
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthService {
 
-    public static final String CLIENT_ID_KEY = "client_id";
-    public static final String REDIRECT_URI_KEY = "redirect_uri";
-    public static final String CLIENT_SECRET = "client_secret";
-    public static final String CODE_KEY = "code";
-    public static final String GRANT_TYPE_KEY = "grant_type";
-    public static final String AUTH_CODE = "authorization_code";
-
-    public static final String CONFLICT_MSG = "There is already a %s account that belongs to you";
-    public static final String NOT_FOUND_MSG = "User not found";
-    public static final String LOGING_ERROR_MSG = "Wrong email and/or password";
-    public static final String UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method";
+    public static final String LOGIN_ERROR_MSG = "Wrong email and/or password";
+    public static final long LOGIN_VALIDITY_TIME = 7200000;
 
     @Autowired
     @Setter
     private UserRepository userRepository;
+
+    @Autowired
+    @Setter
+    private TokenRepository tokenRepository;
 
     /**
      * Initialize the user repository.
      */
     @PostConstruct
     public void init() {
-        userRepository.save(
-                new User("e@mail.com", hashPassword("woop"), "1234")
+        User user = new User("e@mail.com", hashPassword("woop"), "1234");
+        user.setCustomerId("1");
+        User savedUser = userRepository.save(
+                user
         );
+        Token token = new Token("godmode=true");
+        token.setTimestamp(Long.MAX_VALUE);
+        token.setUserId(savedUser.getId());
+        tokenRepository.save(token);
     }
 
     /**
@@ -69,9 +74,13 @@ public class AuthService {
         if (foundUser != null
                 && checkPassword(user.getPassword(), foundUser.getPassword())) {
             final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.getId());
-            return Response.ok().entity(token).build();
+            token.setTimestamp(Instant.now().toEpochMilli() + LOGIN_VALIDITY_TIME);
+            token.setCustId(foundUser.getCustomerId());
+            token.setUserId(foundUser.getId());
+            tokenRepository.save(token);
+            return Response.status(Response.Status.CREATED).entity(token).build();
         }
-        return Response.status(Response.Status.UNAUTHORIZED).entity(LOGING_ERROR_MSG).build();
+        return Response.status(Response.Status.UNAUTHORIZED).entity(LOGIN_ERROR_MSG).build();
     }
 
     /**
@@ -85,10 +94,33 @@ public class AuthService {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public Response signup(@RequestBody final User user, @Context final HttpServletRequest request)
             throws JOSEException {
+        if (user.getId() != null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid user data").build();
+        }
+        String oriPassword = user.getPassword();
         user.setPassword(hashPassword(user.getPassword()));
-        final User savedUser = userRepository.save(user);
-        final Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser.getId());
-        return Response.status(Response.Status.CREATED).entity(token).build();
+        User savedUser = userRepository.save(user);
+        return login(new User(user.getEmail(), oriPassword, savedUser.getCustomerId()), request);
+    }
+
+    /**
+     * I wonder what this does.
+     *
+     * @param tokenString the token value to check for.
+     * @return true if valid, false otherwise.
+     */
+    public boolean isAuthorized(final String tokenString) {
+        if (tokenString == null) {
+            return false;
+        }
+        String t = tokenString.replace("Bearer ", "");
+        Token token = tokenRepository.findByToken(t);
+        if (token == null) {
+            return false;
+        } else if (token.getTimestamp() < Instant.now().toEpochMilli()) {
+            return false;
+        }
+        return true;
     }
 
     private String hashPassword(final String plaintext) {

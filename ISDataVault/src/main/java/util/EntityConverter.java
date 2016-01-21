@@ -12,7 +12,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 /**
  * Created by alex on 1/19/16.
  */
+@SuppressWarnings("squid:S2070")
 public final class EntityConverter {
+
+    // suppressing squid:S2070 because SHA-1 is used for generating a unique business key
+    // and not hashing a password, hence no security risk.
 
     private EntityConverter() {
         // hidden constructor

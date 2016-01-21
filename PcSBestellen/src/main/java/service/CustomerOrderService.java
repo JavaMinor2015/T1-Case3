@@ -1,7 +1,9 @@
 package service;
 
+import auth.repository.TokenRepository;
 import entities.OrderState;
 import entities.Product;
+import entities.auth.Token;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
 import java.time.Instant;
@@ -21,6 +23,7 @@ import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
 
 /**
  * @author peaseloxes
@@ -38,6 +41,10 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @Setter
     @Autowired
     private ProductRepository productRepository;
+
+    @Setter
+    @Autowired
+    private TokenRepository tokenRepository;
 
     @PostConstruct
     @Override
@@ -64,6 +71,15 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @Override
     public Class<? extends RestService<CustomerOrder>> getClazz() {
         return this.getClass();
+    }
+
+    @RequestMapping(value = "/myorders", method = RequestMethod.GET)
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> getCustomer(final HttpServletRequest request) {
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        return HateoasUtil.build(customerOrderRepository.findByCustomerId(t.getCustId()));
     }
 
     @Override

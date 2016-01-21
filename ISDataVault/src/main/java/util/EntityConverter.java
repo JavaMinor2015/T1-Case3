@@ -14,6 +14,10 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class EntityConverter {
 
+    private EntityConverter () {
+        // hidden constructor
+    }
+
     /**
      * Convert an entity to its VaultEntity.
      *

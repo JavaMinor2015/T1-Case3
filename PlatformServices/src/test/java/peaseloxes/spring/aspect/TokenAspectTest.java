@@ -77,14 +77,21 @@ public class TokenAspectTest {
         assertThat(response.getStatusCode(),
                 is(HttpStatus.FORBIDDEN));
 
+
         Mockito.when(mockJointPoint.getArgs()).thenReturn(new Object[]{});
         assertThat(((ResponseEntity<HateoasResponse>) aspect.handleLinkAnnotation(
                 mockJointPoint,
                 mockLoginRequired)).getStatusCode(),
                 is(HttpStatus.FORBIDDEN));
+    }
 
-        // not a response entity
+    @PrepareForTest(AspectUtil.class)
+    @Test
+    public void testFalseResponse() throws Throwable {
+        PowerMockito.mockStatic(AspectUtil.class);
         PowerMockito.when(AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(Matchers.any(), Matchers.any())).thenReturn(false);
+        // not a response entity
+        Mockito.when(mockJointPoint.getArgs()).thenReturn(new Object[]{mockServletRequest});
         Mockito.when(mockJointPoint.proceed())
                 .thenReturn("OMG this is not a HttpEntity");
         assertThat(((ResponseEntity<HateoasResponse>) aspect.handleLinkAnnotation(

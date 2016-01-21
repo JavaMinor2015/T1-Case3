@@ -5,6 +5,7 @@ import entities.abs.PersistenceEntity;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import lombok.Setter;
 import mock.ESBMock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +22,7 @@ public class DataVaultService {
     public static final int DELAY = 5000;
 
     @Autowired
+    @Setter
     private ESBMock esb;
 
     private BlockingQueue<VaultEntity> blockingQueue = new LinkedBlockingQueue<>();

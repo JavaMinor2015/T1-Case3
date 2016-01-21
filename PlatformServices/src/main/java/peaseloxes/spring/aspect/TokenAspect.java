@@ -51,7 +51,8 @@ public class TokenAspect {
                     return jointPoint.proceed();
                 }
                 // tell the user the bad news
-                return new ResponseEntity<>(new HateoasResponse("You are not logged in or your token has expired."), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new HateoasResponse("You are not logged in or your token has expired."),
+                        HttpStatus.FORBIDDEN);
             }
         }
         // tell the user the bad news

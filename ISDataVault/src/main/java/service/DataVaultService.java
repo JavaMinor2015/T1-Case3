@@ -34,7 +34,6 @@ public class DataVaultService {
      *
      * @param entity the entity to send.
      */
-//    @Async
     public void postToVault(final PersistenceEntity entity) {
         VaultEntity vaultEntity = EntityConverter.convert(entity);
         if (!esb.post(vaultEntity)) {

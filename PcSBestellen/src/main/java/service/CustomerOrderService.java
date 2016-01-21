@@ -73,10 +73,16 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         return this.getClass();
     }
 
+    /**
+     * Retrieve a customer's orders.
+     *
+     * @param request the http request.
+     * @return a customers orders.
+     */
     @RequestMapping(value = "/myorders", method = RequestMethod.GET)
     @WrapWithLink
     @LoginRequired
-    public HttpEntity<HateoasResponse> getCustomer(final HttpServletRequest request) {
+    public HttpEntity<HateoasResponse> getMyOrders(final HttpServletRequest request) {
         String token = request.getHeader("Authorization").replace("Bearer ", "");
         Token t = tokenRepository.findByToken(token);
         return HateoasUtil.build(customerOrderRepository.findByCustomerId(t.getCustId()));

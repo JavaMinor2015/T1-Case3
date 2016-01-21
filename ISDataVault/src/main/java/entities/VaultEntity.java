@@ -21,17 +21,25 @@ public class VaultEntity {
         this.businessKey = businessKey;
     }
 
+    /**
+     * Add another vault entity as a sub.
+     *
+     * @param entity the entity to add.
+     */
     public void addSub(final VaultEntity entity) {
         containedKeys.add(entity);
     }
 
     @Override
     public String toString() {
-        String response = "{\"" + businessKey + "\" : [";
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append("{\"")
+                .append(businessKey)
+                .append("\" : [");
         for (VaultEntity containedKey : containedKeys) {
-            response += containedKey.toString();
+            responseBuilder.append(containedKey.toString());
         }
-        response += "]}";
-        return response;
+        responseBuilder.append("]}");
+        return responseBuilder.toString();
     }
 }

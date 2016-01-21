@@ -3,7 +3,7 @@ package peaseloxes.spring.aspect;
 /**
  * Created by alex on 1/20/16.
  */
-public class AspectUtil {
+public final class AspectUtil {
 
     private AspectUtil() {
         // hidden

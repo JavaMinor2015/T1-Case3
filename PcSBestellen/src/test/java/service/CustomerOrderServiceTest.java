@@ -3,6 +3,7 @@ package service;
 import auth.repository.TokenRepository;
 import entities.OrderState;
 import entities.Product;
+import entities.auth.Token;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
 import java.lang.reflect.Method;
@@ -19,7 +20,7 @@ import rest.util.HateoasResponse;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 
 /**
  * Created by alex on 1/14/16.
@@ -37,11 +38,17 @@ public class CustomerOrderServiceTest {
         customerOrderService = new CustomerOrderService();
         mockCustomerOrderRepository = Mockito.mock(CustomerOrderRepository.class);
         mockProductRepository = Mockito.mock(ProductRepository.class);
+        mockTokenRepository = Mockito.mock(TokenRepository.class);
 
         mockRequest = Mockito.mock(HttpServletRequest.class);
         customerOrderService.setCustomerOrderRepository(mockCustomerOrderRepository);
         customerOrderService.setProductRepository(mockProductRepository);
         customerOrderService.setRestRepository(mockCustomerOrderRepository);
+        customerOrderService.setTokenRepository(mockTokenRepository);
+        Token t = new Token("asd");
+        t.setCustId("1");
+        Mockito.when(mockTokenRepository.findByToken(anyString())).thenReturn(t);
+        Mockito.when(mockRequest.getHeader(eq("Authorization"))).thenReturn(t.getToken());
     }
 
     @Test
@@ -118,5 +125,10 @@ public class CustomerOrderServiceTest {
         Mockito.when(mockProductRepository.save(any(Product.class))).thenReturn(productInStock);
         stockDecrease.invoke(customerOrderService, product);
         assertThat(productInStock.getStock(), is(4));
+    }
+
+    @Test
+    public void testGetMyOrders() {
+        assertThat(customerOrderService.getMyOrders(mockRequest).hasBody(), is(true));
     }
 }

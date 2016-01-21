@@ -12,9 +12,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 /**
  * Created by alex on 1/19/16.
  */
-public class EntityConverter {
+public final class EntityConverter {
 
-    private EntityConverter () {
+    private EntityConverter() {
         // hidden constructor
     }
 
@@ -71,15 +71,16 @@ public class EntityConverter {
     }
 
     private static VaultEntity convertOrder(final CustomerOrder customerOrder) {
-        String hash = String.valueOf(customerOrder.getClass())
-                + customerOrder.getTimestamp()
-                + customerOrder.getOrderStatus()
-                + customerOrder.getCustomerId()
-                + customerOrder.getTotalPrice();
+        StringBuilder hashBuilder = new StringBuilder();
+        hashBuilder.append(String.valueOf(customerOrder.getClass()))
+                .append(customerOrder.getTimestamp())
+                .append(customerOrder.getOrderStatus())
+                .append(customerOrder.getCustomerId())
+                .append(customerOrder.getTotalPrice());
         for (CustomerProduct product : customerOrder.getProducts()) {
-            hash += combineProduct(product);
+            hashBuilder.append(combineProduct(product));
         }
-        return new VaultEntity(BusinessKey.ORDER.key(DigestUtils.sha1Hex(hash)));
+        return new VaultEntity(BusinessKey.ORDER.key(DigestUtils.sha1Hex(hashBuilder.toString())));
     }
 
     private static String combineAddress(final Address address) {

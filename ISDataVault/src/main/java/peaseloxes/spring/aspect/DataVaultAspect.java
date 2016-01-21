@@ -20,6 +20,14 @@ public class DataVaultAspect {
     @Setter
     private DataVaultService vaultService;
 
+    /**
+     * Handle the vault annotation.
+     *
+     * @param jointPoint the original method.
+     * @param observable the annotation.
+     * @return the original method with a business key.
+     * @throws Throwable and catchable.
+     */
     @SuppressWarnings("squid:S00112")
     @Around("@annotation(observable)")
     public Object handleVaultAnnotation(final ProceedingJoinPoint jointPoint,

@@ -76,6 +76,12 @@ public class CustomerService extends RestService<Customer> {
         repository.save(customer);
     }
 
+    /**
+     * Retrieve a customers data.
+     *
+     * @param request the http request.
+     * @return a customer's own data.
+     */
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     @WrapWithLink
     @LoginRequired

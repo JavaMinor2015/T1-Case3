@@ -27,6 +27,11 @@ public class Token extends PersistenceEntity {
     @Setter
     private String custId;
 
+    @JsonIgnore
+    @Getter
+    @Setter
+    private String userId;
+
 
     /**
      * A constructor.

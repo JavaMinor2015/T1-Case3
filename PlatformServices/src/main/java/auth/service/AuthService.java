@@ -46,11 +46,14 @@ public class AuthService {
      */
     @PostConstruct
     public void init() {
-        userRepository.save(
-                new User("e@mail.com", hashPassword("woop"), "1234")
+        User user = new User("e@mail.com", hashPassword("woop"), "1234");
+        user.setCustomerId("1");
+        User savedUser = userRepository.save(
+                user
         );
         Token token = new Token("godmode=true");
         token.setTimestamp(Long.MAX_VALUE);
+        token.setUserId(savedUser.getId());
         tokenRepository.save(token);
     }
 
@@ -73,6 +76,7 @@ public class AuthService {
             final Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.getId());
             token.setTimestamp(Instant.now().toEpochMilli() + LOGIN_VALIDITY_TIME);
             token.setCustId(foundUser.getCustomerId());
+            token.setUserId(foundUser.getId());
             tokenRepository.save(token);
             return Response.status(Response.Status.CREATED).entity(token).build();
         }
@@ -95,8 +99,8 @@ public class AuthService {
         }
         String oriPassword = user.getPassword();
         user.setPassword(hashPassword(user.getPassword()));
-        userRepository.save(user);
-        return login(new User(user.getEmail(), oriPassword, null), request);
+        User savedUser = userRepository.save(user);
+        return login(new User(user.getEmail(), oriPassword, savedUser.getCustomerId()), request);
     }
 
     /**

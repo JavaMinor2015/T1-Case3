@@ -1,9 +1,12 @@
 package service;
 
+import auth.repository.TokenRepository;
 import entities.OrderState;
 import entities.Product;
+import entities.auth.Token;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -20,6 +23,7 @@ import repository.CustomerOrderRepository;
 import repository.ProductRepository;
 import rest.service.RestService;
 import rest.util.HateoasResponse;
+import rest.util.HateoasUtil;
 
 /**
  * @author peaseloxes
@@ -37,6 +41,10 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
     @Setter
     @Autowired
     private ProductRepository productRepository;
+
+    @Setter
+    @Autowired
+    private TokenRepository tokenRepository;
 
     @PostConstruct
     @Override
@@ -65,6 +73,21 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         return this.getClass();
     }
 
+    /**
+     * Retrieve a customer's orders.
+     *
+     * @param request the http request.
+     * @return a customers orders.
+     */
+    @RequestMapping(value = "/myorders", method = RequestMethod.GET)
+    @WrapWithLink
+    @LoginRequired
+    public HttpEntity<HateoasResponse> getMyOrders(final HttpServletRequest request) {
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        return HateoasUtil.build(customerOrderRepository.findByCustomerId(t.getCustId()));
+    }
+
     @Override
     @WrapWithLink
     @LoginRequired
@@ -73,10 +96,14 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        customerOrder.setCustomerId(t.getCustId());
         HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
         CustomerOrder order = customerOrderRepository.findOne(custOrderId);
         order.setOrderId(custOrderId);
+        order.setTimestamp(Instant.now().toEpochMilli());
         return super.post(order, request);
     }
 

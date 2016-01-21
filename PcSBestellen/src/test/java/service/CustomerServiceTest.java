@@ -1,15 +1,22 @@
 package service;
 
+import auth.repository.TokenRepository;
+import auth.repository.UserRepository;
 import entities.Address;
 import entities.Customer;
+import entities.auth.Token;
+import entities.auth.User;
 import entities.rest.CustomerOrder;
 import entities.rest.CustomerProduct;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,10 +30,12 @@ import repository.CustomerOrderRepository;
 import repository.CustomerRepository;
 import rest.util.HateoasResponse;
 import rest.util.HateoasUtil;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 
 /**
  * Created by alex on 1/13/16.
@@ -36,22 +45,49 @@ public class CustomerServiceTest {
 
     private CustomerRepository mockCustomerRepository;
     private CustomerOrderRepository mockCustomerOrderRepository;
+    private TokenRepository mockTokenRepository;
+    private HttpServletRequest mockRequest;
 
     private CustomerService service;
     private CustomerOrder testOrder;
     private Link testLink;
+    private Token testToken;
+    private User testUser;
     private ResponseEntity<HateoasResponse> testEntity;
     private AddressRepository mockAddressRepository;
+    private UserRepository mockUserRepository;
 
     @Before
     public void setUp() {
         mockCustomerRepository = Mockito.mock(CustomerRepository.class);
         mockAddressRepository = Mockito.mock(AddressRepository.class);
         mockCustomerOrderRepository = Mockito.mock(CustomerOrderRepository.class);
+        mockTokenRepository = Mockito.mock(TokenRepository.class);
+        mockUserRepository = Mockito.mock(UserRepository.class);
+        mockRequest = Mockito.mock(HttpServletRequest.class);
+
+        testToken = new Token("godmode=true");
+        testToken.setUserId("1");
+        testToken.setCustId("1");
+        testToken.setTimestamp(Instant.now().toEpochMilli());
+
+        testUser = new User();
+        testUser.setCustomerId("1");
+        testUser.setEmail("me@company.com");
+        testUser.setPassword("oracle123");
+        testUser.setId("1");
+
+        Mockito.when(mockTokenRepository.findByToken(any(String.class))).thenReturn(testToken);
+        Mockito.when(mockTokenRepository.save(any(Token.class))).thenReturn(testToken);
+        Mockito.when(mockRequest.getHeader(eq("Authorization"))).thenReturn("Bearer godmode=true");
+        Mockito.when(mockUserRepository.findOne(any(String.class))).thenReturn(testUser);
+
         service = new CustomerService();
         service.setRepository(mockCustomerRepository);
         service.setAddressRepository(mockAddressRepository);
         service.setCustomerOrderRepository(mockCustomerOrderRepository);
+        service.setTokenRepository(mockTokenRepository);
+        service.setUserRepository(mockUserRepository);
 
         testOrder = CustomerOrder.builder()
                 .orderId("1")
@@ -87,18 +123,19 @@ public class CustomerServiceTest {
         Customer testCustomer = new Customer();
         testCustomer.setAddress(new Address());
         testCustomer.setDeliveryAddress(new Address());
-        PowerMockito.when(HateoasUtil.build(any(Customer.class))).thenReturn(testEntity);
-        PowerMockito.when(HateoasUtil.build(any(Address.class))).thenReturn(testEntity);
-        Mockito.when(mockAddressRepository.findByZipcodeAndNumber(any(String.class), any(String.class))).thenReturn(new Address());
+        PowerMockito.when(HateoasUtil.toHateoas(any(Customer.class), Matchers.<Link[]>anyVararg())).thenReturn(new HateoasResponse(new Customer()));
+        Mockito.when(mockAddressRepository.findByZipcodeAndNumber(any(String.class), any(String.class))).thenReturn(new Address()).thenReturn(new Address());
         Mockito.when(mockCustomerRepository.save(any(Customer.class))).thenReturn(new Customer());
 
-        // no need to test everything, mock returns a customerorder so that will do
-        assertThat(service.post(testCustomer, null).getBody().getContent(), instanceOf(CustomerOrder.class));
+        assertThat(service.post(testCustomer, mockRequest).getBody().getContent(), instanceOf(Customer.class));
 
         Mockito.when(mockAddressRepository.findByZipcodeAndNumber(any(String.class), any(String.class))).thenReturn(null).thenReturn(null);
 
-        // no need to test everything, mock returns a customerorder so that will do
-        assertThat(service.post(testCustomer, null).getBody().getContent(), instanceOf(CustomerOrder.class));
+        assertThat(service.post(testCustomer, mockRequest).getBody().getContent(), instanceOf(Customer.class));
+
+        assertThat(service.post(testCustomer, mockRequest).getBody().getContent(), instanceOf(Customer.class));
+
+        assertThat(service.post(testCustomer, mockRequest).getBody().getContent(), instanceOf(Customer.class));
     }
 
     @PrepareForTest(HateoasUtil.class)
@@ -114,5 +151,13 @@ public class CustomerServiceTest {
     @Test
     public void testGetClazz() throws Exception {
         assertThat(service.getClazz().equals(CustomerService.class), is(true));
+    }
+
+    @PrepareForTest(HateoasUtil.class)
+    @Test
+    public void testGetCustomer() throws Exception {
+        PowerMockito.mockStatic(HateoasUtil.class);
+        PowerMockito.when(HateoasUtil.build(any(Customer.class))).thenReturn(new ResponseEntity<>(new HateoasResponse(new Customer()), HttpStatus.OK));
+        assertThat(service.getCustomer(mockRequest).getBody().getContent(), instanceOf(Customer.class));
     }
 }

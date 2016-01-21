@@ -28,6 +28,12 @@ public class RandUtilTest {
     }
 
     @Test
+    public void testRInt1Valid0() throws Exception {
+        assertThat(RandUtil.rInt(100), is(both(lessThan(100)).and(greaterThanOrEqualTo(0))));
+        assertThat(RandUtil.rInt(Integer.MAX_VALUE), is(both(lessThan(Integer.MAX_VALUE)).and(greaterThanOrEqualTo(0))));
+    }
+
+    @Test
     public void testRInt1Valid() throws Exception {
         assertThat(RandUtil.rInt(5), is(both(lessThan(5)).and(greaterThanOrEqualTo(0))));
         assertThat(RandUtil.rInt(Integer.MAX_VALUE), is(both(lessThan(Integer.MAX_VALUE)).and(greaterThanOrEqualTo(0))));

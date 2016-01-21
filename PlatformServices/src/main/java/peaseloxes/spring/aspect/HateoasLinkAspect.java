@@ -37,18 +37,19 @@ public class HateoasLinkAspect {
      *
      * @param jointPoint   the original joint point.
      * @param wrapWithLink the annotation.
-     * @param request      the servlet request.
      * @return a new HttpEntity with links, or the original response.
      * @throws Throwable try not to get hit.
      */
     @SuppressWarnings("squid:S00112")
-    @Around("singleAnnotation(wrapWithLink) && hasRequestParam(request)")
+    @Around("singleAnnotation(wrapWithLink)")
     public Object handleLinkAnnotation(final ProceedingJoinPoint jointPoint,
-                                       final WrapWithLink wrapWithLink,
-                                       final HttpServletRequest request) throws Throwable {
+                                       final WrapWithLink wrapWithLink) throws Throwable {
         final Object response = jointPoint.proceed();
-        if (HttpEntity.class.isAssignableFrom(response.getClass())) {
-            return addLinks((HttpEntity) response, wrapWithLink, request);
+        for (Object o : jointPoint.getArgs()) {
+            Object request = processObject(wrapWithLink, response, o);
+            if (request != null) {
+                return request;
+            }
         }
         // nothing we can do but return the original and hope for the best
         return response;
@@ -59,22 +60,44 @@ public class HateoasLinkAspect {
      *
      * @param jointPoint    the original joint point.
      * @param wrapWithLinks the annotation.
-     * @param request       the servlet request.
      * @return a new HttpEntity with links, or the original response.
      * @throws Throwable try not to get hit.
      */
     @SuppressWarnings("squid:S00112")
-    @Around("multipleAnnotation(wrapWithLinks) && hasRequestParam(request)")
+    @Around("multipleAnnotation(wrapWithLinks)")
     public Object handleLinksAnnotation(final ProceedingJoinPoint jointPoint,
-                                        final WrapWithLinks wrapWithLinks,
-                                        final HttpServletRequest request) throws Throwable {
+                                        final WrapWithLinks wrapWithLinks) throws Throwable {
         final Object response = jointPoint.proceed();
-        if (HttpEntity.class.isAssignableFrom(response.getClass())) {
-            return addLinks((HttpEntity) response, wrapWithLinks, request);
+        for (Object o : jointPoint.getArgs()) {
+            Object request = processObject(wrapWithLinks, response, o);
+            if (request != null) {
+                return request;
+            }
         }
         // nothing we can do but return the original and hope for the best
         return response;
     }
+
+    private Object processObject(final WrapWithLink wrapWithLink, final Object response, final Object o) {
+        if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(o, HttpServletRequest.class)) {
+            HttpServletRequest request = (HttpServletRequest) o;
+            if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(response, HttpEntity.class)) {
+                return addLinks((HttpEntity) response, wrapWithLink, request);
+            }
+        }
+        return null;
+    }
+
+    private Object processObject(final WrapWithLinks wrapWithLinks, final Object response, final Object o) {
+        if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(o, HttpServletRequest.class)) {
+            HttpServletRequest request = (HttpServletRequest) o;
+            if (AspectUtil.imAnUntestableHorrorAndDoNotDeserveToBeInTheSameClass(response, HttpEntity.class)) {
+                return addLinks((HttpEntity) response, wrapWithLinks, request);
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds links to an HttpEntity instance.
@@ -149,16 +172,6 @@ public class HateoasLinkAspect {
     }
 
     /* POINTCUTS */
-
-    /**
-     * Defines that the method arguments must include a request parameter.
-     *
-     * @param request a HttpServletRequest parameter.
-     */
-    @SuppressWarnings("squid:UnusedPrivateMethod")
-    @Pointcut("args(..,request) || args(request,..)")
-    private void hasRequestParam(final HttpServletRequest request) {
-    }
 
     /**
      * Defines that the annotation WrapWithLink must be applied.

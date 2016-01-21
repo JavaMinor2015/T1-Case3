@@ -17,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import peaseloxes.spring.annotations.DataVaultObservable;
 import peaseloxes.spring.annotations.LoginRequired;
 import peaseloxes.spring.annotations.WrapWithLink;
 import repository.CustomerOrderRepository;
@@ -90,6 +91,7 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
 
     @Override
     @WrapWithLink
+    @DataVaultObservable
     @LoginRequired
     public HttpEntity<HateoasResponse> post(@RequestBody final CustomerOrder customerOrder,
                                             final HttpServletRequest request) {

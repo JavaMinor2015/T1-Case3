@@ -90,6 +90,9 @@ public class CustomerOrderService extends RestService<CustomerOrder> {
         if (customerOrder.getId() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        String token = request.getHeader("Authorization").replace("Bearer ", "");
+        Token t = tokenRepository.findByToken(token);
+        customerOrder.setCustomerId(t.getCustId());
         HttpEntity<HateoasResponse> response = super.post(customerOrder, request);
         String custOrderId = ((CustomerOrder) (response.getBody().getContent())).getId();
         CustomerOrder order = customerOrderRepository.findOne(custOrderId);

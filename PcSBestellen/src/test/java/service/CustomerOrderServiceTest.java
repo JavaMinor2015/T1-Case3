@@ -1,5 +1,6 @@
 package service;
 
+import auth.repository.TokenRepository;
 import entities.OrderState;
 import entities.Product;
 import entities.rest.CustomerOrder;
@@ -28,6 +29,7 @@ public class CustomerOrderServiceTest {
     private CustomerOrderService customerOrderService;
     private CustomerOrderRepository mockCustomerOrderRepository;
     private ProductRepository mockProductRepository;
+    private TokenRepository mockTokenRepository;
     private HttpServletRequest mockRequest;
 
     @Before

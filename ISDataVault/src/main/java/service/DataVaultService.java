@@ -34,7 +34,6 @@ public class DataVaultService {
      *
      * @param entity the entity to send.
      */
-    @Async
     public void postToVault(final PersistenceEntity entity) {
         VaultEntity vaultEntity = EntityConverter.convert(entity);
         if (!esb.post(vaultEntity)) {
@@ -45,6 +44,7 @@ public class DataVaultService {
     /**
      * Retry all the unsuccessful posts.
      */
+    @Async
     @Scheduled(fixedDelay = DELAY)
     public void retry() {
         if (!blockingQueue.isEmpty()) {
